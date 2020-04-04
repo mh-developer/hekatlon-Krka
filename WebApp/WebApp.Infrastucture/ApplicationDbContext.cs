@@ -12,6 +12,12 @@ namespace WebApp.Infrastructure
 {
     public sealed class ApplicationDbContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>, IDisposable
     {
+        public new DbSet<User> Users { get; set; }
+        public DbSet<Company> Companies { get; set; }
+        public DbSet<Delivery> Deliveries { get; set; }
+        public DbSet<DeliveryPoint> DeliveryPoints { get; set; }
+        public DbSet<Warehouse> Warehouses { get; set; }
+
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
