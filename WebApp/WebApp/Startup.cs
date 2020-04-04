@@ -48,6 +48,10 @@ namespace WebApp
             var mapperConfig = new MapperConfiguration(mc =>
             {
                 mc.AddProfile(new UserMapperProfile());
+                mc.AddProfile(new CompanyMapperProfile());
+                mc.AddProfile(new DeliveryMapperProfile());
+                mc.AddProfile(new DeliveryPointMapperProfile());
+                mc.AddProfile(new WarehouseMapperProfile());
             });
             var mapper = mapperConfig.CreateMapper();
 
@@ -60,7 +64,7 @@ namespace WebApp
             services.AddScoped<IDeliveryService, DeliveryService>();
             services.AddScoped<IDeliveryPointService, DeliveryPointService>();
             services.AddScoped<IWarehouseService, WarehouseService>();
-            
+
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ICompanyRepository, CompanyRepository>();
             services.AddScoped<IDeliveryRepository, DeliveryRepository>();

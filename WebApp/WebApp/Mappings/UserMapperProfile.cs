@@ -4,7 +4,7 @@ using WebApp.Models;
 
 namespace WebApp.Mappings
 {
-    public class UserMapperProfile: Profile
+    public class UserMapperProfile : Profile
     {
         public UserMapperProfile()
         {
