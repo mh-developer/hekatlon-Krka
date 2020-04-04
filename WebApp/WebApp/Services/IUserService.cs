@@ -10,11 +10,9 @@ namespace WebApp.Services
     {
         Task<List<UserDto>> GetAllAsync();
 
-
         Task<UserDto> GetAsync(Guid userAccountId);
 
         Task<UserDto> GetByEmailAsync(string email);
-
 
         Task<IdentityResult> CreateAsync(UserDto userAccountDto);
 

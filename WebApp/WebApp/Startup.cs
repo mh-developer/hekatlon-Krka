@@ -56,8 +56,16 @@ namespace WebApp
             services.AddHttpContextAccessor();
 
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ICompanyService, CompanyService>();
+            services.AddScoped<IDeliveryService, DeliveryService>();
+            services.AddScoped<IDeliveryPointService, DeliveryPointService>();
+            services.AddScoped<IWarehouseService, WarehouseService>();
             
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<ICompanyRepository, CompanyRepository>();
+            services.AddScoped<IDeliveryRepository, DeliveryRepository>();
+            services.AddScoped<IDeliveryPointRepository, DeliveryPointRepository>();
+            services.AddScoped<IWarehouseRepository, WarehouseRepository>();
 
             services.AddControllersWithViews();
             services.AddRazorPages();
