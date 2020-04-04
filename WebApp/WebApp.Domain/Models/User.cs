@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System;
-using WebApp.Models.Shared;
+using WebApp.Domain.Models.Shared;
 
-namespace WebApp.Models
+namespace WebApp.Domain.Models
 {
     public class User : IdentityUser<Guid>, IEntity<Guid>, IHasDeletionTime
     {

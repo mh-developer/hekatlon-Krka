@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace WebApp.EntityTypes
+namespace WebApp.Infrastructure.EntityTypes
 {
     public abstract class BaseEntityTypeConfiguration<T> : IEntityTypeConfiguration<T> where T : class
     {

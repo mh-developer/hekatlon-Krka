@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -6,11 +7,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
-using AutoMapper;
-using WebApp.Data;
+using WebApp.Domain.Models;
+using WebApp.Domain.Repositories;
+using WebApp.Infrastructure;
+using WebApp.Infrastructure.Repositories;
 using WebApp.Mappings;
-using WebApp.Models;
-using WebApp.Repositories;
 using WebApp.Services;
 
 namespace WebApp

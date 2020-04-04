@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using WebApp.Domain.Models.Shared;
 
-namespace WebApp.Models.Shared
+namespace WebApp.Domain.Repositories
 {
     public interface IRepository<TEntity, in TPrimaryKey> where TEntity : IEntity<TPrimaryKey>
     {

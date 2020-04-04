@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using WebApp.Models;
+using WebApp.Domain.Models;
 
-namespace WebApp.EntityTypes
+namespace WebApp.Infrastructure.EntityTypes
 {
     internal class DeliveryPointEntityTypeConfiguration : BaseEntityTypeConfiguration<DeliveryPoint>
     {

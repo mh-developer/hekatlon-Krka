@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using WebApp.Domain.Models;
 using WebApp.Models;
 
 namespace WebApp.Mappings

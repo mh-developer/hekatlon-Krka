@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace WebApp.Models.Shared
+namespace WebApp.Domain.Models.Shared
 {
     public abstract class Entity<TPrimaryKey> : IEntity<TPrimaryKey>, IHasDeletionTime
     {

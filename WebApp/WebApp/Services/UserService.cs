@@ -3,8 +3,9 @@ using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using WebApp.Domain.Models;
+using WebApp.Domain.Repositories;
 using WebApp.Models;
-using WebApp.Repositories;
 
 namespace WebApp.Services
 {

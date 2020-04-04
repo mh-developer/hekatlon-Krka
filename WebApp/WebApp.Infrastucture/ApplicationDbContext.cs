@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using WebApp.EntityTypes;
-using WebApp.Models;
-using WebApp.Models.Shared;
+using WebApp.Domain.Models;
+using WebApp.Domain.Models.Shared;
+using WebApp.Infrastructure.EntityTypes;
 
-namespace WebApp.Data
+namespace WebApp.Infrastructure
 {
     public sealed class ApplicationDbContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>, IDisposable
     {
@@ -41,7 +41,8 @@ namespace WebApp.Data
             return base.SaveChanges();
         }
 
-        public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
+        public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess,
+            CancellationToken cancellationToken = default)
         {
             ApplyCustomRules();
             return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
@@ -64,10 +65,10 @@ namespace WebApp.Data
                             entry.CurrentValues["IsDeleted"] = true;
                             entry.CurrentValues["DeletionTime"] = DateTime.Now;
                         }
+
                         break;
                 }
             }
         }
-
     }
 }

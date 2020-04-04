@@ -1,4 +1,4 @@
-﻿namespace WebApp.Models.Shared
+﻿namespace WebApp.Domain.Models.Shared
 {
     public interface IEntity<TPrimaryKey>
     {

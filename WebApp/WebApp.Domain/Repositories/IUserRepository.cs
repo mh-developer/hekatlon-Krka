@@ -1,8 +1,7 @@
 ﻿using System;
-using WebApp.Models;
-using WebApp.Models.Shared;
+using WebApp.Domain.Models;
 
-namespace WebApp.Repositories
+namespace WebApp.Domain.Repositories
 {
     public interface IUserRepository : IRepository<User, Guid>
     {

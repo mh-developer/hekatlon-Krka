@@ -3,10 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using WebApp.Data;
-using WebApp.Models.Shared;
+using WebApp.Domain.Models.Shared;
+using WebApp.Domain.Repositories;
 
-namespace WebApp.Repositories
+namespace WebApp.Infrastructure.Repositories
 {
     public class Repository<TEntity, TPrimaryKey> : IRepository<TEntity, TPrimaryKey>
         where TEntity : class, IEntity<TPrimaryKey>

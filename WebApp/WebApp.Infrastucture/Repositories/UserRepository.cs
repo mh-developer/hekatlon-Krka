@@ -1,12 +1,12 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using WebApp.Data;
-using WebApp.Models;
+using WebApp.Domain.Models;
+using WebApp.Domain.Repositories;
 
-namespace WebApp.Repositories
+namespace WebApp.Infrastructure.Repositories
 {
     public class UserRepository : Repository<User, Guid>, IUserRepository
     {
