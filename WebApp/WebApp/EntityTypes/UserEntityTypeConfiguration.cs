@@ -12,7 +12,8 @@ namespace WebApp.EntityTypes
 
             builder.HasKey(u => u.Id);
             builder.Property(u => u.Id).HasColumnName("UserID");
-
+            
+            builder.HasIndex(i => i.NormalizedUserName).IsUnique().HasFilter("[IsDeleted] = 0");
             builder.HasIndex(i => i.UserName).IsUnique().HasFilter("[IsDeleted] = 0");
 
             base.Configure(builder);

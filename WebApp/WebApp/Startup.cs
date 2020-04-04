@@ -32,13 +32,6 @@ namespace WebApp
                     Configuration.GetConnectionString("DefaultConnection")));
 
 
-            
-
-            services.AddScoped<IUserService, UserService>();
-            
-            services.AddScoped<IUserRepository, UserRepository>();
-
-
             services.AddIdentity<User, IdentityRole<Guid>>(opt =>
                 {
                     opt.Password.RequireDigit = false;
@@ -60,6 +53,10 @@ namespace WebApp
             services.AddSingleton(mapper);
 
             services.AddHttpContextAccessor();
+
+            services.AddScoped<IUserService, UserService>();
+            
+            services.AddScoped<IUserRepository, UserRepository>();
 
             services.AddControllersWithViews();
             services.AddRazorPages();

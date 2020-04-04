@@ -1,11 +1,12 @@
 ﻿using System;
+using WebApp.Models.Shared;
 
 namespace WebApp.Models
 {
-    public class DeliveryPoint
+    public class DeliveryPoint : Entity<Guid>
     {
-        public virtual int Id { get; set; }
         public virtual string Name { get; set; }
+
         public virtual Warehouse Warehouse { get; set; }
     }
 }
