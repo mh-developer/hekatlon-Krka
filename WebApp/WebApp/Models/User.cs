@@ -9,5 +9,7 @@ namespace WebApp.Models
         public virtual bool IsDeleted { get; set; }
 
         public virtual DateTime? DeletionTime { get; set; }
+
+        public virtual Company Company { get; set; }
     }
 }

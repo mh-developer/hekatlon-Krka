@@ -8,6 +8,20 @@ namespace WebApp.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "Company",
+                columns: table => new
+                {
+                    CompanyID = table.Column<Guid>(nullable: false),
+                    IsDeleted = table.Column<bool>(nullable: false),
+                    DeletionTime = table.Column<DateTime>(nullable: true),
+                    Name = table.Column<string>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Company", x => x.CompanyID);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Roles",
                 columns: table => new
                 {
@@ -41,11 +55,41 @@ namespace WebApp.Migrations
                     LockoutEnabled = table.Column<bool>(nullable: false),
                     AccessFailedCount = table.Column<int>(nullable: false),
                     IsDeleted = table.Column<bool>(nullable: false),
-                    DeletionTime = table.Column<DateTime>(nullable: true)
+                    DeletionTime = table.Column<DateTime>(nullable: true),
+                    CompanyId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_User", x => x.UserID);
+                    table.ForeignKey(
+                        name: "FK_User_Company_CompanyId",
+                        column: x => x.CompanyId,
+                        principalTable: "Company",
+                        principalColumn: "CompanyID",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Warehouse",
+                columns: table => new
+                {
+                    WarehouseID = table.Column<Guid>(nullable: false),
+                    IsDeleted = table.Column<bool>(nullable: false),
+                    DeletionTime = table.Column<DateTime>(nullable: true),
+                    MinCode = table.Column<int>(nullable: true),
+                    MaxCode = table.Column<int>(nullable: true),
+                    CompanyId = table.Column<Guid>(nullable: true),
+                    Name = table.Column<string>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Warehouse", x => x.WarehouseID);
+                    table.ForeignKey(
+                        name: "FK_Warehouse_Company_CompanyId",
+                        column: x => x.CompanyId,
+                        principalTable: "Company",
+                        principalColumn: "CompanyID",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -154,6 +198,120 @@ namespace WebApp.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "DeliveryPoint",
+                columns: table => new
+                {
+                    DeliveryPointID = table.Column<Guid>(nullable: false),
+                    IsDeleted = table.Column<bool>(nullable: false),
+                    DeletionTime = table.Column<DateTime>(nullable: true),
+                    Name = table.Column<string>(nullable: false),
+                    WarehouseId = table.Column<Guid>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DeliveryPoint", x => x.DeliveryPointID);
+                    table.ForeignKey(
+                        name: "FK_DeliveryPoint_Warehouse_WarehouseId",
+                        column: x => x.WarehouseId,
+                        principalTable: "Warehouse",
+                        principalColumn: "WarehouseID",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Delivery",
+                columns: table => new
+                {
+                    DeliveryID = table.Column<Guid>(nullable: false),
+                    IsDeleted = table.Column<bool>(nullable: false),
+                    DeletionTime = table.Column<DateTime>(nullable: true),
+                    Code = table.Column<int>(nullable: false),
+                    DeliveryPointId = table.Column<Guid>(nullable: true),
+                    Status = table.Column<byte>(nullable: false, defaultValue: (byte)0),
+                    DispatchTime = table.Column<DateTime>(nullable: true),
+                    DeliveryTime = table.Column<DateTime>(nullable: true),
+                    CreationTime = table.Column<DateTime>(nullable: false),
+                    SourceCompanyId = table.Column<Guid>(nullable: true),
+                    DestinationCompanyId = table.Column<Guid>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Delivery", x => x.DeliveryID);
+                    table.ForeignKey(
+                        name: "FK_Delivery_DeliveryPoint_DeliveryPointId",
+                        column: x => x.DeliveryPointId,
+                        principalTable: "DeliveryPoint",
+                        principalColumn: "DeliveryPointID",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Delivery_Company_DestinationCompanyId",
+                        column: x => x.DestinationCompanyId,
+                        principalTable: "Company",
+                        principalColumn: "CompanyID",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Delivery_Company_SourceCompanyId",
+                        column: x => x.SourceCompanyId,
+                        principalTable: "Company",
+                        principalColumn: "CompanyID",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Company_CompanyID",
+                table: "Company",
+                column: "CompanyID",
+                unique: true,
+                filter: "[IsDeleted] = 0");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Company_Name",
+                table: "Company",
+                column: "Name",
+                unique: true,
+                filter: "[IsDeleted] = 0");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Delivery_DeliveryPointId",
+                table: "Delivery",
+                column: "DeliveryPointId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Delivery_DestinationCompanyId",
+                table: "Delivery",
+                column: "DestinationCompanyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Delivery_DeliveryID",
+                table: "Delivery",
+                column: "DeliveryID",
+                unique: true,
+                filter: "[IsDeleted] = 0");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Delivery_SourceCompanyId",
+                table: "Delivery",
+                column: "SourceCompanyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DeliveryPoint_DeliveryPointID",
+                table: "DeliveryPoint",
+                column: "DeliveryPointID",
+                unique: true,
+                filter: "[IsDeleted] = 0");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DeliveryPoint_Name",
+                table: "DeliveryPoint",
+                column: "Name",
+                filter: "[IsDeleted] = 0");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DeliveryPoint_WarehouseId",
+                table: "DeliveryPoint",
+                column: "WarehouseId");
+
             migrationBuilder.CreateIndex(
                 name: "IX_RoleClaims_RoleId",
                 table: "RoleClaims",
@@ -167,6 +325,11 @@ namespace WebApp.Migrations
                 filter: "[NormalizedName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_User_CompanyId",
+                table: "User",
+                column: "CompanyId");
+
+            migrationBuilder.CreateIndex(
                 name: "EmailIndex",
                 table: "User",
                 column: "NormalizedEmail");
@@ -176,7 +339,7 @@ namespace WebApp.Migrations
                 table: "User",
                 column: "NormalizedUserName",
                 unique: true,
-                filter: "[NormalizedUserName] IS NOT NULL");
+                filter: "[IsDeleted] = 0");
 
             migrationBuilder.CreateIndex(
                 name: "IX_User_UserName",
@@ -199,10 +362,32 @@ namespace WebApp.Migrations
                 name: "IX_UserRoles_RoleId",
                 table: "UserRoles",
                 column: "RoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Warehouse_CompanyId",
+                table: "Warehouse",
+                column: "CompanyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Warehouse_WarehouseID",
+                table: "Warehouse",
+                column: "WarehouseID",
+                unique: true,
+                filter: "[IsDeleted] = 0");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Warehouse_Name",
+                table: "Warehouse",
+                column: "Name",
+                unique: true,
+                filter: "[IsDeleted] = 0");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Delivery");
+
             migrationBuilder.DropTable(
                 name: "RoleClaims");
 
@@ -219,10 +404,19 @@ namespace WebApp.Migrations
                 name: "UserTokens");
 
             migrationBuilder.DropTable(
+                name: "DeliveryPoint");
+
+            migrationBuilder.DropTable(
                 name: "Roles");
 
             migrationBuilder.DropTable(
                 name: "User");
+
+            migrationBuilder.DropTable(
+                name: "Warehouse");
+
+            migrationBuilder.DropTable(
+                name: "Company");
         }
     }
 }

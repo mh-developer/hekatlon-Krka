@@ -10,7 +10,7 @@ using WebApp.Models.Shared;
 
 namespace WebApp.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
+    public sealed class ApplicationDbContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>, IDisposable
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -29,6 +29,10 @@ namespace WebApp.Data
             modelBuilder.Entity<IdentityUserRole<Guid>>().ToTable("UserRoles");
 
             modelBuilder.ApplyConfiguration(new UserEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new CompanyEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new DeliveryEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new DeliveryPointEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new WarehouseEntityTypeConfiguration());
         }
 
         public override int SaveChanges()

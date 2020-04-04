@@ -10,7 +10,7 @@ using WebApp.Data;
 namespace WebApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200403200753_init")]
+    [Migration("20200404151350_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -150,6 +150,125 @@ namespace WebApp.Migrations
                     b.ToTable("UserTokens");
                 });
 
+            modelBuilder.Entity("WebApp.Models.Company", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("CompanyID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Id")
+                        .IsUnique()
+                        .HasFilter("[IsDeleted] = 0");
+
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasFilter("[IsDeleted] = 0");
+
+                    b.ToTable("Company");
+                });
+
+            modelBuilder.Entity("WebApp.Models.Delivery", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("DeliveryID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Code")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("CreationTime")
+                        .IsRequired()
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("DeliveryPointId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeliveryTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("DestinationCompanyId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DispatchTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid?>("SourceCompanyId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<byte>("Status")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint")
+                        .HasDefaultValue((byte)0);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DeliveryPointId");
+
+                    b.HasIndex("DestinationCompanyId");
+
+                    b.HasIndex("Id")
+                        .IsUnique()
+                        .HasFilter("[IsDeleted] = 0");
+
+                    b.HasIndex("SourceCompanyId");
+
+                    b.ToTable("Delivery");
+                });
+
+            modelBuilder.Entity("WebApp.Models.DeliveryPoint", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("DeliveryPointID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<Guid?>("WarehouseId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Id")
+                        .IsUnique()
+                        .HasFilter("[IsDeleted] = 0");
+
+                    b.HasIndex("Name")
+                        .HasFilter("[IsDeleted] = 0");
+
+                    b.HasIndex("WarehouseId");
+
+                    b.ToTable("DeliveryPoint");
+                });
+
             modelBuilder.Entity("WebApp.Models.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -159,6 +278,9 @@ namespace WebApp.Migrations
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
+
+                    b.Property<Guid?>("CompanyId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -212,19 +334,62 @@ namespace WebApp.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CompanyId");
+
                     b.HasIndex("NormalizedEmail")
                         .HasName("EmailIndex");
 
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
                         .HasName("UserNameIndex")
-                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+                        .HasFilter("[IsDeleted] = 0");
 
                     b.HasIndex("UserName")
                         .IsUnique()
                         .HasFilter("[IsDeleted] = 0");
 
                     b.ToTable("User");
+                });
+
+            modelBuilder.Entity("WebApp.Models.Warehouse", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("WarehouseID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("CompanyId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("MaxCode")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("MinCode")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompanyId");
+
+                    b.HasIndex("Id")
+                        .IsUnique()
+                        .HasFilter("[IsDeleted] = 0");
+
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasFilter("[IsDeleted] = 0");
+
+                    b.ToTable("Warehouse");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -276,6 +441,42 @@ namespace WebApp.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("WebApp.Models.Delivery", b =>
+                {
+                    b.HasOne("WebApp.Models.DeliveryPoint", "DeliveryPoint")
+                        .WithMany()
+                        .HasForeignKey("DeliveryPointId");
+
+                    b.HasOne("WebApp.Models.Company", "DestinationCompany")
+                        .WithMany()
+                        .HasForeignKey("DestinationCompanyId");
+
+                    b.HasOne("WebApp.Models.Company", "SourceCompany")
+                        .WithMany()
+                        .HasForeignKey("SourceCompanyId");
+                });
+
+            modelBuilder.Entity("WebApp.Models.DeliveryPoint", b =>
+                {
+                    b.HasOne("WebApp.Models.Warehouse", "Warehouse")
+                        .WithMany()
+                        .HasForeignKey("WarehouseId");
+                });
+
+            modelBuilder.Entity("WebApp.Models.User", b =>
+                {
+                    b.HasOne("WebApp.Models.Company", "Company")
+                        .WithMany()
+                        .HasForeignKey("CompanyId");
+                });
+
+            modelBuilder.Entity("WebApp.Models.Warehouse", b =>
+                {
+                    b.HasOne("WebApp.Models.Company", "Company")
+                        .WithMany()
+                        .HasForeignKey("CompanyId");
                 });
 #pragma warning restore 612, 618
         }

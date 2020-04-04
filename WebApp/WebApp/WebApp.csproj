@@ -8,6 +8,16 @@
   <ItemGroup>
     <Compile Remove="Migrations\20200403190506_init.cs" />
     <Compile Remove="Migrations\20200403190506_init.Designer.cs" />
+    <Compile Remove="Migrations\20200403200753_init.cs" />
+    <Compile Remove="Migrations\20200403200753_init.Designer.cs" />
+    <Compile Remove="Migrations\20200404140807_update_1.cs" />
+    <Compile Remove="Migrations\20200404140807_update_1.Designer.cs" />
+    <Compile Remove="Migrations\20200404145717_create_tables.cs" />
+    <Compile Remove="Migrations\20200404145717_create_tables.Designer.cs" />
+    <Compile Remove="Migrations\20200404150057_init.cs" />
+    <Compile Remove="Migrations\20200404150057_init.Designer.cs" />
+    <Compile Remove="Migrations\20200404150247_init_2.cs" />
+    <Compile Remove="Migrations\20200404150247_init_2.Designer.cs" />
   </ItemGroup>
 
 
