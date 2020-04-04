@@ -6,8 +6,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
+using AutoMapper;
 using WebApp.Data;
+using WebApp.Mappings;
 using WebApp.Models;
+using WebApp.Repositories;
+using WebApp.Services;
 
 namespace WebApp
 {
@@ -28,6 +32,13 @@ namespace WebApp
                     Configuration.GetConnectionString("DefaultConnection")));
 
 
+            
+
+            services.AddScoped<IUserService, UserService>();
+            
+            services.AddScoped<IUserRepository, UserRepository>();
+
+
             services.AddIdentity<User, IdentityRole<Guid>>(opt =>
                 {
                     opt.Password.RequireDigit = false;
@@ -39,6 +50,16 @@ namespace WebApp
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
+
+            var mapperConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new UserMapperProfile());
+            });
+            var mapper = mapperConfig.CreateMapper();
+
+            services.AddSingleton(mapper);
+
+            services.AddHttpContextAccessor();
 
             services.AddControllersWithViews();
             services.AddRazorPages();

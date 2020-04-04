@@ -1,6 +1,6 @@
 ﻿namespace WebApp.Models.Shared
 {
-    public interface IEntity<TPrimaryKey>
+    public interface IEntityDto<TPrimaryKey>
     {
         TPrimaryKey Id { get; set; }
     }

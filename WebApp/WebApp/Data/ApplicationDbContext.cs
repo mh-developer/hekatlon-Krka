@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using WebApp.EntityTypes;
 using WebApp.Models;
+using WebApp.Models.Shared;
 
 namespace WebApp.Data
 {

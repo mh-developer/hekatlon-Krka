@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace WebApp.Models
+namespace WebApp.Models.Shared
 {
     public interface IHasDeletionTime : ISoftDelete
     {

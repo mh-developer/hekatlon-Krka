@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace WebApp.Models
+namespace WebApp.Models.Shared
 {
-    interface IRepository<TEntity, in TPrimaryKey> where TEntity : IEntity<TPrimaryKey>
+    public interface IRepository<TEntity, in TPrimaryKey> where TEntity : IEntity<TPrimaryKey>
     {
         Task<List<TEntity>> GetAllAsync();
 
