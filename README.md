@@ -1,28 +1,50 @@
-# Hekatlon izziv Moje Delo
+# Hekatlon izziv Krka
 
 Kazalo vsebine
 =================
 - [Predpogoji](#predpogoji)
-- [Inštalacija in pogajanje iz Visual Studio Code (opcijsko)](#inštalacija-in-poganjanje-iz-visual-studio-code)
+- [Inštalacija in poganjanje](#inštalacija-in-poganjanje)
 - [Uporabljene tehnologije](#uporabljene-tehnologije)
+- [Uporabljene tehnologije](#uporabljene-tehnologije)
+- [Uporabljen pristop](#uporabljen-pristop)
+- [Struktura aplikacije](#struktura-aplikacije)
 
 
 ## Predpogoji
 
 Pravilno poganjanje aplikacije preizkušeno s sledečimi razvijalskimi orodji:
-- [Visual Studio Code](https://code.visualstudio.com/)
-- [Node.js 12.x](https://nodejs.org/)
+- [Visual Studio 2019](https://visualstudio.microsoft.com/vs/)
+- [SSMS 17.x](https://docs.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver15)
 
 
-## Inštalacija in poganjanje iz Visual Studio Code
+## Inštalacija in poganjanje
 
 Ko imate pripravljena razvijalska okolja, zaženite sledeče ukaze:
 
-- `cd WebApp/`
-- `npm install`
-- `npm start`
+1. Odprite projekt v Visual Studiu
+    - `Open project or solution -> poiščite preneseno mapo ter v podmapi WebApp/ odprite .sln datoteko`
+    - Po potrebi izvedite `Restore NuGet Packages`
+
+2. Nastavite povezavo do podatkovne baze v Visual Studiu
+    - `WebApp -> appsettings.json -> "ConnectionStrings" -> "Default"`
+    
+3. Zaženite migracije podatkovne baze
+    - `dotnet ef database update` -> če uporabljate .NET Core CLI
+    - `Update-Database` -> če uporabljate Packege Manager Console
+    
+4. Nato lahko zaženete aplikacijo
 
 
 ## Uporabljene tehnologije
 
-- Angular 9.1.0
+- ASP.NET Core MVC 3.1
+
+## Uporabljen pristop
+
+- "Code first"
+
+## Struktura aplikacije
+
+- WebApp.Domain -> organizacija podatkovnih modelov aplikacije
+- WebApp.Infrastructure -> organizacija migracij in komunikaje z podatkovno bazo
+- WebApp -> implementacija spletnega dela
