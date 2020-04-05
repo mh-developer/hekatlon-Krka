@@ -1,10 +1,25 @@
-﻿@model WebApp.Models.Delivery.DeliveryViewModel
+﻿@using Newtonsoft.Json
+@model WebApp.Models.Delivery.DeliveryViewModel
 
 
-    <script type="text/javascript">
+<script type="text/javascript">
+    function convertDatetime(datetime) {
+        var date = new Date(datetime);
+        var day = date.getDate();       // yields date
+        var month = date.getMonth() + 1;    // yields month (add one as '.getMonth()' is zero indexed)
+        var year = date.getFullYear();  // yields year
+        var hour = date.getHours();     // yields hours 
+        var minute = date.getMinutes(); // yields minutes
+        var second = date.getSeconds(); // yields seconds
+
+        var time = day + "/" + month + "/" + year + " " + hour + ':' + minute + ':' + second;
+        return time;
+    }
+
+
     $(document).ready(function() {
         $('[data-toggle="tooltip"]').tooltip();
-        console.log(@{ @Model.DeliveryEvents } );
+        console.log(@Html.Raw(JsonConvert.SerializeObject(Model.DeliveryEvents)));
 
         var calendarEl = document.getElementById('calendar');
         let startTime = document.getElementById('startTime');
@@ -30,10 +45,10 @@
                 nowIndicator: true,
                 theme: 'cosmo',
                 eventOverlap: false,
-                events: @{ @Model.DeliveryEvents } ,
+                events: @{ @Html.Raw(JsonConvert.SerializeObject(Model.DeliveryEvents)) } ,
                 eventDrop: function(info) {
-                    startTime.innerHTML = info.event.start;
-                    endTime.innerHTML = info.event.end;
+                    startTime.value = convertDatetime(info.event.start);
+                    endTime.value = convertDatetime(info.event.end);
                 },
                 select: function(info) {
                     if (c === 0) {
@@ -49,15 +64,15 @@
                             }
                         );
                         this.selectable = false;
-                        startTime.innerHTML = info.startStr;
-                        endTime.innerHTML = info.endStr;
+                        startTime.value = convertDatetime(info.startStr);
+                        endTime.value = convertDatetime(info.endStr);
                         c++;
                     }
                 },
             });
         calendar.render();
     });
-    </script>
+</script>
 <div class="dispatch-form-width login-form">
     <form asp-action="Dispatch">
         <div class="avatar">
@@ -83,12 +98,12 @@
                 }
             </select>
         </div>
-        <div class="form-group" id="startTime">
-            <input asp-for="DispatchTime" name="start" type="hidden" class="form-control" required="required">
+        <div class="form-group" >
+            <input id="startTime" asp-for="DispatchTime" type="hidden" class="form-control" required="required">
 
         </div>
-        <div class="form-group" id="endTime">
-            <input asp-for="DeliveryTime" name="end" type="hidden" class="form-control" required="required">
+        <div class="form-group" >
+            <input id="endTime" asp-for="DeliveryTime" type="hidden" class="form-control" required="required">
         </div>
         <div class="form-group">
             <span asp-validation-for="DispatchTime" class="text-danger"></span>

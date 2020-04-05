@@ -213,7 +213,7 @@ namespace WebApp.Controllers
                 Code = delivery.Code,
                 DestinationCompanies = company,
                 DeliveryPoints = deliveryPoints,
-                DeliveryEvents = JsonConvert.SerializeObject(deliveryEvents)
+                DeliveryEvents = deliveryEvents
             };
 
             if (vm == null)

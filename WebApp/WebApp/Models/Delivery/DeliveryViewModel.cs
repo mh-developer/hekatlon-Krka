@@ -14,6 +14,6 @@ namespace WebApp.Models.Delivery
 
         public IList<DeliveryPointDto> DeliveryPoints { get; set; }
 
-        public string DeliveryEvents { get; set; }
+        public IList<Event> DeliveryEvents { get; set; }
     }
 }
