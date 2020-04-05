@@ -12,5 +12,7 @@ namespace WebApp.Domain.Models
         public virtual Company Company { get; set; }
 
         public virtual string Name { get; set; }
+
+        public virtual Event[] Events { get; set; }
     }
 }

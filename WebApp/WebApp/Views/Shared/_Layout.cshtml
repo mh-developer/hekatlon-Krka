@@ -28,11 +28,13 @@
             var calendarEl = document.getElementById('calendar');
             let startTime = document.getElementById('startTime');
             let endTime = document.getElementById('endTime');
+            let c = 0;
 
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 plugins: ['interaction', 'dayGrid', 'timeGrid'],
                 selectable: true,
                 droppable: true,
+                editable: true,
                 themeSystem: 'bootstrap',
                 defaultView: 'timeGridWeek',
                 header: {
@@ -45,20 +47,37 @@
                 slotDuration: '00:30:00',
                 nowIndicator: true,
                 theme: 'cosmo',
-                select: function (info) {
-                    alert('selected ' + info.startStr + ' to ' + info.endStr);
-                    this.selectable = false;
-                    startTime.innerHTML = info.startStr;
-                    endTime.innerHTML = info.endStr;
-                    console.log(startTime.innerHTML);
-                },
+                eventOverlap: false,
                 events: [
                     {
                         title: 'Dostava',
                         start: '2020-04-05 12:00:00',
                         end: '2020-04-05 12:30:00'
                     }
-                ]
+                ],
+                eventDrop: function (info) {
+                    startTime.innerHTML = info.event.start;
+                    endTime.innerHTML = info.event.end;
+                },
+                select: function (info) {
+                    if (c === 0) {
+                        alert('selected ' + info.startStr + ' to ' + info.endStr);
+                        this.addEvent(
+                            {
+                                title: 'Dostava',
+                                start: info.startStr,
+                                end: info.endStr,
+                                editable: true,
+                                eventOverlap: false,
+                                durationEditable: false
+                            }
+                        );
+                        this.selectable = false;
+                        startTime.innerHTML = info.startStr;
+                        endTime.innerHTML = info.endStr;
+                        c++;
+                    }
+                },
             });
             calendar.render();
         });
