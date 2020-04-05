@@ -96,22 +96,30 @@ namespace WebApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = await _userManager.GetUserAsync(HttpContext.User);
-
-                var sourceCompany = await _companyService.GetByNameAsync(delivery.SourceCompany.Name);
-
-                var newDelivery = new DeliveryDto()
+                try
                 {
-                    Id = Guid.NewGuid(),
-                    CreationTime = DateTime.UtcNow,
-                    DestinationCompanyId = user.CompanyId,
-                    SourceCompanyId = sourceCompany.Id,
-                    Code = delivery.Code,
-                    Status = DeliveryStatus.None
-                };
+                    var user = await _userManager.GetUserAsync(HttpContext.User);
 
-                await _deliveryService.CreateAsync(newDelivery);
-                return RedirectToAction(nameof(Index));
+                    var sourceCompany = await _companyService.GetByNameAsync(delivery.SourceCompany.Name);
+
+                    var newDelivery = new DeliveryDto()
+                    {
+                        Id = Guid.NewGuid(),
+                        CreationTime = DateTime.UtcNow,
+                        DestinationCompanyId = user.CompanyId,
+                        SourceCompanyId = sourceCompany.Id,
+                        Code = delivery.Code,
+                        Status = DeliveryStatus.None
+                    };
+
+                    await _deliveryService.CreateAsync(newDelivery);
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception e)
+                {
+                    ModelState.AddModelError(string.Empty, "Podjetje s takšnim imenom ne obstaja. Navedite točno ime.");
+                    return View(delivery);
+                }
             }
 
             return View(delivery);
