@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using WebApp.Domain.Models;
 using WebApp.Models;
+using WebApp.Models.Warehouses;
 using WebApp.Services;
 
 namespace WebApp.Controllers
@@ -19,20 +20,26 @@ namespace WebApp.Controllers
         private readonly UserManager<User> _userManager;
         private readonly IUserService _userService;
         private readonly IWarehouseService _warehouseService;
+        private readonly IDeliveryPointService _deliveryPointService;
         private readonly IAuthenticationSchemeProvider _schemeProvider;
+        private readonly ICompanyService _companyService;
 
         public WarehousesController(
             ILogger<WarehousesController> logger,
             IAuthenticationSchemeProvider schemeProvider,
             UserManager<User> userManager,
             IUserService userService,
-            IWarehouseService warehouseService)
+            IDeliveryPointService deliveryPointService,
+            IWarehouseService warehouseService,
+            ICompanyService companyService)
         {
             _logger = logger;
             _userManager = userManager;
             _userService = userService;
             _warehouseService = warehouseService;
+            _deliveryPointService = deliveryPointService;
             _schemeProvider = schemeProvider;
+            _companyService = companyService;
         }
 
         // GET: Warehouses
@@ -50,12 +57,19 @@ namespace WebApp.Controllers
             }
 
             var warehouse = await _warehouseService.GetAsync((Guid) id);
+            var deliveryPoints = (await _deliveryPointService.GetAllAsync()).Where(x => x.WarehouseId == warehouse.Id).ToList();
+
+            var vm = new WarehouseViewModel()
+            {
+                DeliveryPoints = deliveryPoints
+            };
+
             if (warehouse == null)
             {
                 return NotFound();
             }
 
-            return View(warehouse);
+            return View(vm);
         }
 
         // GET: Warehouses/Create
@@ -69,12 +83,17 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("MinCode,MaxCode,Name,Address,PhoneNumber")]
-            WarehouseDto warehouse)
+        public async Task<IActionResult> Create(WarehouseDto warehouse)
         {
             if (ModelState.IsValid)
             {
                 warehouse.Id = Guid.NewGuid();
+                
+                var user = await _userManager.GetUserAsync(HttpContext.User);
+                var company = await _companyService.GetAsync((Guid) user.CompanyId);
+                warehouse.CompanyId = company.Id;
+
+
                 await _warehouseService.CreateAsync(warehouse);
                 return RedirectToAction(nameof(Index));
             }
@@ -116,6 +135,10 @@ namespace WebApp.Controllers
             {
                 try
                 {
+                    var user = await _userManager.GetUserAsync(HttpContext.User);
+                    var company = await _companyService.GetAsync((Guid) user.CompanyId);
+                    warehouse.CompanyId = company.Id;
+
                     await _warehouseService.UpdateAsync(warehouse);
                 }
                 catch (DbUpdateConcurrencyException)

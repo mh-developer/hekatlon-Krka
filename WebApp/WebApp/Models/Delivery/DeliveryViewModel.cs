@@ -9,5 +9,11 @@ namespace WebApp.Models.Delivery
         public IList<DeliveryDto> DeliveriesRequests { get; set; }
 
         public CompanyDto DestinationCompanies { get; set; }
+
+        public IList<WarehouseDto> Warehouses { get; set; }
+
+        public IList<DeliveryPointDto> DeliveryPoints { get; set; }
+
+        public string DeliveryEvents { get; set; }
     }
 }

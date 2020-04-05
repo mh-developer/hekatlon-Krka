@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using WebApp.Domain.Models;
 using WebApp.Infrastructure;
 using WebApp.Models;
@@ -171,7 +172,7 @@ namespace WebApp.Controllers
             return View(delivery);
         }
 
-        
+
         // GET: Deliveries/Delete/5
         public async Task<IActionResult> Dispatch(Guid? id)
         {
@@ -181,12 +182,46 @@ namespace WebApp.Controllers
             }
 
             var delivery = await _deliveryService.GetAsync((Guid) id);
-            if (delivery == null)
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var company = await _companyService.GetAsync((Guid) user.CompanyId);
+            var warehouse = (await _warehouseService.GetAllAsync()).Where(x =>
+                x.CompanyId == company.Id && x.MaxCode >= delivery.Code && x.MinCode <= delivery.Code).FirstOrDefault();
+
+            var deliveryPoints = (await _deliveryPointService.GetAllAsync()).Where(x => x.WarehouseId == warehouse.Id)
+                .ToList();
+
+            var deliveryEvents = new List<Event>();
+
+            deliveryPoints.ForEach((x) =>
+            {
+                var deliveries = _deliveryService.GetAllAsync().GetAwaiter().GetResult().Where(o => o.DeliveryPointId == x.Id).ToList();
+
+                deliveries.ForEach(d =>
+                {
+                    deliveryEvents.Add(new Event()
+                    {
+                        Title = "Dostava",
+                        Start = d.DispatchTime,
+                        End = d.DeliveryTime
+                    });
+                });
+            });
+
+            var vm = new DeliveryViewModel()
+            {
+                Id = delivery.Id,
+                Code = delivery.Code,
+                DestinationCompanies = company,
+                DeliveryPoints = deliveryPoints,
+                DeliveryEvents = JsonConvert.SerializeObject(deliveryEvents)
+            };
+
+            if (vm == null)
             {
                 return NotFound();
             }
 
-            return View(delivery);
+            return View(vm);
         }
 
         [HttpPost]
@@ -202,8 +237,14 @@ namespace WebApp.Controllers
             {
                 try
                 {
-                    delivery.Status = DeliveryStatus.InProgress;
-                    await _deliveryService.UpdateAsync(delivery);
+                    var newDelivery = await _deliveryService.GetAsync((Guid) id);
+
+                    newDelivery.DeliveryTime = delivery.DeliveryTime;
+                    newDelivery.DispatchTime = delivery.DispatchTime;
+                    newDelivery.DeliveryPointId = delivery.DeliveryPointId;
+                    newDelivery.Status = DeliveryStatus.InProgress;
+
+                    await _deliveryService.UpdateAsync(newDelivery);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -221,6 +262,40 @@ namespace WebApp.Controllers
             }
 
             return View(delivery);
+        }
+
+
+        public async Task<IActionResult> Accept(Guid? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var delivery = await _deliveryService.GetAsync((Guid) id);
+            if (delivery == null)
+            {
+                return NotFound();
+            }
+
+            try
+            {
+                delivery.Status = DeliveryStatus.Received;
+                await _deliveryService.UpdateAsync(delivery);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!await DeliveryExists(delivery.Id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Deliveries/Delete/5

@@ -19,7 +19,5 @@ namespace WebApp.Models
         public string Address { get; set; }
 
         public string PhoneNumber { get; set; }
-
-        public Event[] Events { get; set; }
     }
 }

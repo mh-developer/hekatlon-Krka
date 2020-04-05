@@ -2,70 +2,6 @@
 @using WebApp.Domain.Models
 @model WebApp.Models.Delivery.DeliveryViewModel
 
-@*<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.Code)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Status)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.DispatchTime)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.DeliveryTime)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.CreationTime)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.IsDeleted)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.DeletionTime)
-        </th>
-        <th></th>
-    </tr>
-    </thead>
-    <tbody>
-    @foreach (var item in Model)
-    {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Code)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Status)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DispatchTime)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DeliveryTime)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreationTime)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsDeleted)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DeletionTime)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-    }
-    </tbody>
-</table>*@
 
 <div class="container">
     <div class="table-wrapper">
@@ -202,7 +138,7 @@
 
                                      case DeliveryStatus.Received:
                                          <text>
-                                             <span class="status text-success">&bull;</span> Dostavljena
+                                             <td><span class="status text-success">&bull;</span> Dostavljena</td>
                                          </text>
                                          break;
 
@@ -227,9 +163,12 @@
                              <a asp-action="Delete" asp-route-id="@item.Id" class="delete" title="Odstrani" data-toggle="tooltip">
                                  <i class="material-icons">&#xE5C9;</i>
                              </a>
-                             <a asp-action="Details" asp-route-id="@item.Id" class="dispatch" title="Prevzemi" data-toggle="tooltip">
-                                 <i class="material-icons">done</i>
-                             </a>
+                             @if (item.Status != DeliveryStatus.Received)
+                             {
+                                 <a asp-action="Accept" asp-route-id="@item.Id" class="dispatch" title="Prevzemi" data-toggle="tooltip">
+                                     <i class="material-icons">done</i>
+                                 </a>
+                             }
                          </td>
                      </tr>
                  }

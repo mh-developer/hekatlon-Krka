@@ -6,7 +6,7 @@ namespace WebApp.Models
 {
     public class DeliveryDto : EntityDto<Guid>
     {
-        public int Code { get; set; }
+        public int? Code { get; set; }
 
         public DeliveryPoint DeliveryPoint { get; set; }
 

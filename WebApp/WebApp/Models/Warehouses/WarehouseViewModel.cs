@@ -4,6 +4,8 @@ namespace WebApp.Models.Warehouses
 {
     public class WarehouseViewModel : WarehouseDto
     {
-        public IList<WarehouseDto> WarehouseDtos { get; set; }
+        public IList<WarehouseDto> Warehouses { get; set; }
+
+        public IList<DeliveryPointDto> DeliveryPoints { get; set; }
     }
 }
