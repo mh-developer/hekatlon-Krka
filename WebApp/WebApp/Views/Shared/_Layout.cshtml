@@ -10,10 +10,57 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@@fullcalendar/core@4.4.0/main.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@@fullcalendar/daygrid@4.4.0/main.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@@fullcalendar/timegrid@4.4.0/main.min.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/@@fullcalendar/core@4.4.0/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@@fullcalendar/daygrid@4.4.0/main.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@@fullcalendar/timegrid@4.4.0/main.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@@fullcalendar/interaction@4.4.0/main.min.js"></script>
+
     <link rel="stylesheet" href="~/css/site.css" />
     <script type="text/javascript">
         $(document).ready(function () {
             $('[data-toggle="tooltip"]').tooltip();
+
+            var calendarEl = document.getElementById('calendar');
+            let startTime = document.getElementById('startTime');
+            let endTime = document.getElementById('endTime');
+
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                plugins: ['interaction', 'dayGrid', 'timeGrid'],
+                selectable: true,
+                droppable: true,
+                themeSystem: 'bootstrap',
+                defaultView: 'timeGridWeek',
+                header: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'timeGridWeek'
+                },
+                minTime: '06:00:00',
+                maxTime: '18:00:00',
+                slotDuration: '00:30:00',
+                nowIndicator: true,
+                theme: 'cosmo',
+                select: function (info) {
+                    alert('selected ' + info.startStr + ' to ' + info.endStr);
+                    this.selectable = false;
+                    startTime.innerHTML = info.startStr;
+                    endTime.innerHTML = info.endStr;
+                    console.log(startTime.innerHTML);
+                },
+                events: [
+                    {
+                        title: 'Dostava',
+                        start: '2020-04-05 12:00:00',
+                        end: '2020-04-05 12:30:00'
+                    }
+                ]
+            });
+            calendar.render();
         });
     </script>
     <style type="text/css">
@@ -32,10 +79,15 @@
                 border-color: #00ab4e;
             }
 
+        .dispatch-form-width {
+            max-width: 700px;
+            width: 700px !important;
+        }
+
         .login-form {
-            width: 350px;
             margin: 0 auto;
             padding: 30px 0;
+            width: 350px;
         }
 
             .login-form form {
