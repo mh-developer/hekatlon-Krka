@@ -188,41 +188,44 @@ namespace WebApp.Controllers
             {
                 return NotFound();
             }
-
+            
             var delivery = await _deliveryService.GetAsync((Guid) id);
             var user = await _userManager.GetUserAsync(HttpContext.User);
             var company = await _companyService.GetAsync((Guid) user.CompanyId);
-            var warehouse = (await _warehouseService.GetAllAsync()).Where(x =>
-                x.CompanyId == company.Id && x.MaxCode >= delivery.Code && x.MinCode <= delivery.Code).FirstOrDefault();
 
-            var deliveryPoints = (await _deliveryPointService.GetAllAsync()).Where(x => x.WarehouseId == warehouse.Id)
-                .ToList();
-
-            var deliveryEvents = new List<Event>();
-
-            deliveryPoints.ForEach((x) =>
+            try
             {
-                var deliveries = _deliveryService.GetAllAsync().GetAwaiter().GetResult().Where(o => o.DeliveryPointId == x.Id).ToList();
+                var warehouse = (await _warehouseService.GetAllAsync()).Where(x =>
+                    x.CompanyId == company.Id && x.MaxCode >= delivery.Code && x.MinCode <= delivery.Code).FirstOrDefault();
 
-                deliveries.ForEach(d =>
+                var deliveryPoints = (await _deliveryPointService.GetAllAsync()).Where(x => x.WarehouseId == warehouse.Id)
+                    .ToList();
+
+                var deliveryEvents = new List<Event>();
+
+                deliveryPoints.ForEach((x) =>
                 {
-                    deliveryEvents.Add(new Event()
+                    var deliveries = _deliveryService.GetAllAsync().GetAwaiter().GetResult().Where(o => o.DeliveryPointId == x.Id).ToList();
+
+                    deliveries.ForEach(d =>
                     {
-                        Title = "Dostava",
-                        Start = d.DispatchTime,
-                        End = d.DeliveryTime
+                        deliveryEvents.Add(new Event()
+                        {
+                            Title = "Dostava",
+                            Start = d.DispatchTime,
+                            End = d.DeliveryTime
+                        });
                     });
                 });
-            });
 
-            var vm = new DeliveryViewModel()
-            {
-                Id = delivery.Id,
-                Code = delivery.Code,
-                DestinationCompanies = company,
-                DeliveryPoints = deliveryPoints,
-                DeliveryEvents = deliveryEvents
-            };
+                var vm = new DeliveryViewModel()
+                {
+                    Id = delivery.Id,
+                    Code = delivery.Code,
+                    DestinationCompanies = company,
+                    DeliveryPoints = deliveryPoints,
+                    DeliveryEvents = deliveryEvents
+                };
 
             if (vm == null)
             {
@@ -230,6 +233,20 @@ namespace WebApp.Controllers
             }
 
             return View(vm);
+            }
+            catch (Exception e)
+            {
+                ModelState.AddModelError(string.Empty, "Prosimo vnesite skladišča (tudi min in max vrednost posebej) in dostavne točke, ter nato poskusite ponovno.");
+                
+                return View(new DeliveryViewModel()
+                {
+                    Id = delivery.Id,
+                    Code = delivery.Code,
+                    DestinationCompanies = company,
+                    DeliveryPoints = new List<DeliveryPointDto>(),
+                    DeliveryEvents = new List<Event>()
+                });
+            }
         }
 
         [HttpPost]

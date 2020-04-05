@@ -19,7 +19,6 @@
 
     $(document).ready(function() {
         $('[data-toggle="tooltip"]').tooltip();
-        console.log(@Html.Raw(JsonConvert.SerializeObject(Model.DeliveryEvents)));
 
         var calendarEl = document.getElementById('calendar');
         let startTime = document.getElementById('startTime');
