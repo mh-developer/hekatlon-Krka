@@ -2,6 +2,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using System;
 using WebApp.Domain.Models;
 using WebApp.Domain.Repositories;
+using WebApp.Helpers;
 using WebApp.Infrastructure;
 using WebApp.Infrastructure.Repositories;
 using WebApp.Mappings;
@@ -56,6 +58,7 @@ namespace WebApp
             var mapper = mapperConfig.CreateMapper();
 
             services.AddSingleton(mapper);
+            services.AddSingleton<IEmailSender, EmailSender>();
 
             services.AddHttpContextAccessor();
 

@@ -16,25 +16,23 @@ namespace WebApp.Infrastructure.Repositories
 
         public override async Task<List<User>> GetAllAsync()
         {
-            return await Context.Users.FromSqlRaw("SELECT * FROM UserView").ToListAsync();
+            return await Context.Users.ToListAsync();
         }
 
         public override async Task<List<User>> FilterAsync(Func<User, bool> predicate)
         {
-            return await Context.Users.FromSqlRaw("SELECT * FROM UserView").ToListAsync()
+            return await Context.Users.ToListAsync()
                 .ContinueWith(x => x.Result.Where(predicate).ToList());
         }
 
         public override User Get(Guid id)
         {
-            return Context.Users.FromSqlRaw("SELECT * FROM UserView")
-                .FirstOrDefault(x => x.Id == id);
+            return Context.Users.FirstOrDefault(x => x.Id == id);
         }
 
         public override async Task<User> GetAsync(Guid id)
         {
-            return await Context.Users.FromSqlRaw("SELECT * FROM UserView")
-                .FirstOrDefaultAsync(x => x.Id == id);
+            return await Context.Users.FirstOrDefaultAsync(x => x.Id == id);
         }
     }
 }
