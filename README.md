@@ -42,6 +42,7 @@ Ko imate pripravljena razvijalska okolja, zaženite sledeče ukaze:
 ## Uporabljen pristop
 
 - "Code first"
+- "Soft delete"
 
 ## Struktura aplikacije
 
