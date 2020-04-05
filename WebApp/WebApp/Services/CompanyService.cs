@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using WebApp.Domain.Models;
 using WebApp.Domain.Repositories;
 using WebApp.Models;
 
@@ -20,29 +21,90 @@ namespace WebApp.Services
             _mapper = mapper;
         }
 
-        public Task<CompanyDto> CreateAsync(CompanyDto companyDto)
+        public async Task<CompanyDto> CreateAsync(CompanyDto companyDto)
         {
-            throw new NotImplementedException();
+            if (companyDto == null)
+            {
+                throw new ArgumentNullException(nameof(companyDto));
+            }
+
+            var existingCompany = await _companyRepository.FilterAsync(x => x.Name == companyDto.Name);
+            if (existingCompany.Count != 0)
+            {
+                throw new Exception("Company with same name already exists.");
+            }
+
+            var company = _mapper.Map<CompanyDto, Company>(companyDto);
+
+            _companyRepository.Add(company);
+
+            await _companyRepository.SaveChangesAsync();
+
+            return _mapper.Map<Company, CompanyDto>(company);
         }
 
-        public Task<List<CompanyDto>> GetAllAsync()
+        public async Task<List<CompanyDto>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            var companies = await _companyRepository.GetAllAsync();
+
+            return _mapper.Map<List<Company>, List<CompanyDto>>(companies);
         }
 
-        public Task<CompanyDto> GetAsync(Guid companyId)
+        public async Task<CompanyDto> GetAsync(Guid companyId)
         {
-            throw new NotImplementedException();
+            if (companyId == default)
+            {
+                throw new ArgumentException("Company id is invalid.", nameof(companyId));
+            }
+
+            var company = await _companyRepository.GetAsync(companyId);
+            if (company == null)
+            {
+                throw new Exception($"Could not find company with id = '{companyId}'.");
+            }
+
+            return _mapper.Map<Company, CompanyDto>(company);
         }
 
-        public Task RemoveAsync(Guid companyId)
+        public async Task RemoveAsync(Guid companyId)
         {
-            throw new NotImplementedException();
+            if (companyId == default)
+            {
+                throw new ArgumentException("Company id is invalid.", nameof(companyId));
+            }
+
+            var company = await _companyRepository.GetAsync(companyId);
+            if (company == null)
+            {
+                throw new Exception($"Could not find company with id = '{companyId}'.");
+            }
+
+            _companyRepository.Remove(company);
+
+            await _companyRepository.SaveChangesAsync();
         }
 
-        public Task UpdateAsync(CompanyDto companyDto)
+        public async Task UpdateAsync(CompanyDto companyDto)
         {
-            throw new NotImplementedException();
+            if (companyDto == null)
+            {
+                throw new ArgumentNullException(nameof(companyDto));
+            }
+
+            if (companyDto.Id == default)
+            {
+                throw new ArgumentException("Company id is invalid.", nameof(companyDto.Id));
+            }
+
+            var company = await _companyRepository.GetAsync(companyDto.Id);
+            if (company == null)
+            {
+                throw new Exception($"Could not find company with id = '{companyDto.Id}'.");
+            }
+
+            _mapper.Map(companyDto, company);
+
+            await _companyRepository.SaveChangesAsync();
         }
     }
 }

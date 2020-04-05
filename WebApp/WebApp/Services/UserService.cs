@@ -36,12 +36,13 @@ namespace WebApp.Services
         {
             if (userId == default)
             {
+                throw new ArgumentException("User id is invalid.", nameof(userId));
             }
 
             var user = await _userRepository.GetAsync(userId);
             if (user == null)
             {
-                throw new Exception($"Could not find user account with id = '{userId}'");
+                throw new Exception($"Could not find user with id = '{userId}'");
             }
 
             return _mapper.Map<User, UserDto>(user);
@@ -58,7 +59,7 @@ namespace WebApp.Services
                 x.NormalizedEmail.ToUpper().Equals(email.ToUpper()));
             if (user.Count == 0)
             {
-                throw new Exception($"Could not find user account with email = '{email}'");
+                throw new Exception($"Could not find user with email = '{email}'");
             }
 
             return _mapper.Map<User, UserDto>(user[0]);
@@ -71,23 +72,20 @@ namespace WebApp.Services
                 throw new ArgumentNullException(nameof(userDto));
             }
 
-            //if (!EmailValidator.IsValidEmail(userDto.Email))
-            //{
-            //    throw new ArgumentException("Email is invalid.", nameof(userDto.Email));
-            //}
-
             var existingUser =
                 await _userRepository.FilterAsync(x => x.NormalizedEmail.ToUpper().Equals(userDto.Email.ToUpper()));
             if (existingUser.Count > 0)
             {
-                throw new Exception($"User account with email = '{userDto.Email}' already exists.");
+                throw new Exception($"User with email = '{userDto.Email}' already exists.");
             }
 
             var user = new User()
             {
                 Id = userDto.Id != default ? userDto.Id : Guid.NewGuid(),
                 Email = userDto.Email,
-                UserName = userDto.Email
+                UserName = userDto.Email,
+                FirstName = userDto.FirstName,
+                LastName = userDto.LastName
             };
 
             var identityResult = await _userManager.CreateAsync(user);
@@ -112,13 +110,13 @@ namespace WebApp.Services
 
             if (userDto.Id == default)
             {
-                throw new ArgumentException("User account id is invalid.", nameof(userDto.Id));
+                throw new ArgumentException("User id is invalid.", nameof(userDto.Id));
             }
 
             var user = await _userRepository.GetAsync(userDto.Id);
             if (user == null)
             {
-                throw new Exception($"Could not find user account with id = '{userDto.Id}'.");
+                throw new Exception($"Could not find user with id = '{userDto.Id}'.");
             }
 
             _mapper.Map(userDto, user);
@@ -130,13 +128,13 @@ namespace WebApp.Services
         {
             if (userId == default)
             {
-                throw new ArgumentException("User account id is invalid.", nameof(userId));
+                throw new ArgumentException("User id is invalid.", nameof(userId));
             }
 
             var user = await _userRepository.GetAsync(userId);
             if (user == null)
             {
-                throw new Exception($"Could not find user account with id = '{userId}'.");
+                throw new Exception($"Could not find user with id = '{userId}'.");
             }
 
             await _userManager.DeleteAsync(user);

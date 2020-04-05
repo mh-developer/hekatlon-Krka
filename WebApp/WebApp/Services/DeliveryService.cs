@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using WebApp.Domain.Models;
 using WebApp.Domain.Repositories;
 using WebApp.Models;
 
@@ -20,29 +21,84 @@ namespace WebApp.Services
             _mapper = mapper;
         }
 
-        public Task<DeliveryDto> CreateAsync(DeliveryDto deliveryDto)
+        public async Task<DeliveryDto> CreateAsync(DeliveryDto deliveryDto)
         {
-            throw new NotImplementedException();
+            if (deliveryDto == null)
+            {
+                throw new ArgumentNullException(nameof(deliveryDto));
+            }
+
+            var delivery = _mapper.Map<DeliveryDto, Delivery>(deliveryDto);
+
+            _deliveryRepository.Add(delivery);
+
+            await _deliveryRepository.SaveChangesAsync();
+
+            return _mapper.Map<Delivery, DeliveryDto>(delivery);
         }
 
-        public Task<List<DeliveryDto>> GetAllAsync()
+        public async Task<List<DeliveryDto>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            var deliveries = await _deliveryRepository.GetAllAsync();
+
+            return _mapper.Map<List<Delivery>, List<DeliveryDto>>(deliveries);
         }
 
-        public Task<DeliveryDto> GetAsync(Guid deliveryId)
+        public async Task<DeliveryDto> GetAsync(Guid deliveryId)
         {
-            throw new NotImplementedException();
+            if (deliveryId == default)
+            {
+                throw new ArgumentException("Delivery id is invalid.", nameof(deliveryId));
+            }
+
+            var delivery = await _deliveryRepository.GetAsync(deliveryId);
+            if (delivery == null)
+            {
+                throw new Exception($"Could not find delivery with id = '{deliveryId}'.");
+            }
+
+            return _mapper.Map<Delivery, DeliveryDto>(delivery);
         }
 
-        public Task RemoveAsync(Guid deliveryId)
+        public async Task RemoveAsync(Guid deliveryId)
         {
-            throw new NotImplementedException();
+            if (deliveryId == default)
+            {
+                throw new ArgumentException("Delivery id is invalid.", nameof(deliveryId));
+            }
+
+            var delivery = await _deliveryRepository.GetAsync(deliveryId);
+            if (delivery == null)
+            {
+                throw new Exception($"Could not find delivery with id = '{deliveryId}'.");
+            }
+
+            _deliveryRepository.Remove(delivery);
+
+            await _deliveryRepository.SaveChangesAsync();
         }
 
-        public Task UpdateAsync(DeliveryDto deliveryDto)
+        public async Task UpdateAsync(DeliveryDto deliveryDto)
         {
-            throw new NotImplementedException();
+            if (deliveryDto == null)
+            {
+                throw new ArgumentNullException(nameof(deliveryDto));
+            }
+
+            if (deliveryDto.Id == default)
+            {
+                throw new ArgumentException("Delivery id is invalid.", nameof(deliveryDto.Id));
+            }
+
+            var delivery = await _deliveryRepository.GetAsync(deliveryDto.Id);
+            if (delivery == null)
+            {
+                throw new Exception($"Could not find delivery with id = '{deliveryDto.Id}'.");
+            }
+
+            _mapper.Map(deliveryDto, delivery);
+
+            await _deliveryRepository.SaveChangesAsync();
         }
     }
 }
