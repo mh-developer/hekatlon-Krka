@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WebApp.Domain.Models;
@@ -14,6 +14,7 @@ using WebApp.Services;
 
 namespace WebApp.Controllers
 {
+    [Authorize]
     public class WarehousesController : Controller
     {
         private readonly ILogger<WarehousesController> _logger;
@@ -168,12 +169,9 @@ namespace WebApp.Controllers
             }
 
             var warehouse = await _warehouseService.GetAsync((Guid) id);
-            if (warehouse == null)
-            {
-                return NotFound();
-            }
+            await _warehouseService.RemoveAsync(warehouse.Id);
 
-            return View(warehouse);
+            return RedirectToAction(nameof(Index));
         }
 
         // POST: Warehouses/Delete/5

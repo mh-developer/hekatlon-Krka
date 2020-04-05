@@ -1,22 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using WebApp.Domain.Models;
-using WebApp.Infrastructure;
 using WebApp.Models;
 using WebApp.Models.Delivery;
 using WebApp.Services;
 
 namespace WebApp.Controllers
 {
+    [Authorize]
     public class DeliveriesController : Controller
     {
         private readonly ILogger<WarehousesController> _logger;
@@ -307,12 +307,10 @@ namespace WebApp.Controllers
             }
 
             var delivery = await _deliveryService.GetAsync((Guid) id);
-            if (delivery == null)
-            {
-                return NotFound();
-            }
 
-            return View(delivery);
+            await _deliveryService.RemoveAsync(delivery.Id);
+            
+            return RedirectToAction(nameof(Index));
         }
 
         // POST: Deliveries/Delete/5

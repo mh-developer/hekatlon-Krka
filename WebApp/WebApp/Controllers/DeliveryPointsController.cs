@@ -1,21 +1,48 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 using WebApp.Domain.Models;
 using WebApp.Infrastructure;
+using WebApp.Services;
 
 namespace WebApp.Controllers
 {
+    [Authorize]
     public class DeliveryPointsController : Controller
     {
+        private readonly ILogger<DeliveryPointsController> _logger;
+        private readonly UserManager<User> _userManager;
+        private readonly IUserService _userService;
+        private readonly IWarehouseService _warehouseService;
+        private readonly IDeliveryPointService _deliveryPointService;
+        private readonly IAuthenticationSchemeProvider _schemeProvider;
+        private readonly ICompanyService _companyService;
         private readonly ApplicationDbContext _context;
 
-        public DeliveryPointsController(ApplicationDbContext context)
+        public DeliveryPointsController(
+            ILogger<DeliveryPointsController> logger,
+            IAuthenticationSchemeProvider schemeProvider,
+            UserManager<User> userManager,
+            IUserService userService,
+            IDeliveryPointService deliveryPointService,
+            IWarehouseService warehouseService,
+            ICompanyService companyService,
+            ApplicationDbContext context)
         {
+            _logger = logger;
+            _userManager = userManager;
+            _userService = userService;
+            _warehouseService = warehouseService;
+            _deliveryPointService = deliveryPointService;
+            _schemeProvider = schemeProvider;
+            _companyService = companyService;
             _context = context;
         }
 
@@ -131,15 +158,10 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var deliveryPoint = await _context.DeliveryPoints
-                .Include(d => d.Warehouse)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (deliveryPoint == null)
-            {
-                return NotFound();
-            }
-
-            return View(deliveryPoint);
+            var deliveryPoint = await _deliveryPointService.GetAsync((Guid)id);
+            await _deliveryPointService.RemoveAsync(deliveryPoint.Id);
+            
+            return RedirectToAction(nameof(Index));
         }
 
         // POST: DeliveryPoints/Delete/5
@@ -148,8 +170,6 @@ namespace WebApp.Controllers
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
             var deliveryPoint = await _context.DeliveryPoints.FindAsync(id);
-            _context.DeliveryPoints.Remove(deliveryPoint);
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 

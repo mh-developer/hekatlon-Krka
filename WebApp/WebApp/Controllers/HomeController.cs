@@ -19,12 +19,12 @@ namespace WebApp.Controllers
 
         public async Task<IActionResult> Index()
         {
-            return View();
+            return RedirectToAction("Index", "Deliveries");
         }
 
         public async Task<IActionResult> Privacy()
         {
-            return View();
+            return RedirectToAction("Index", "Deliveries");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
