@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using System;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -11,7 +12,9 @@ using System.Linq;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using AutoMapper;
 using WebApp.Domain.Models;
+using WebApp.Models;
 using WebApp.Models.Account;
 using WebApp.Services;
 
@@ -24,6 +27,7 @@ namespace WebApp.Controllers
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly IUserService _userService;
+        private readonly ICompanyService _companyService;
         private readonly IAuthenticationSchemeProvider _schemeProvider;
         private readonly IConfiguration _configuration;
         private readonly IEmailSender _emailSender;
@@ -35,12 +39,14 @@ namespace WebApp.Controllers
             SignInManager<User> signInManager,
             UserManager<User> userManager,
             IUserService userService,
+            ICompanyService companyService,
             IEmailSender emailSender)
         {
             _logger = logger;
             _userManager = userManager;
             _signInManager = signInManager;
             _userService = userService;
+            _companyService = companyService;
             _configuration = configuration;
             _schemeProvider = schemeProvider;
             _emailSender = emailSender;
@@ -78,8 +84,6 @@ namespace WebApp.Controllers
 
             if (ModelState.IsValid)
             {
-                // This doesn't count login failures towards account lockout
-                // To enable password failures to trigger account lockout, set lockoutOnFailure: true
                 var result =
                     await _signInManager.PasswordSignInAsync(vm.Email, vm.Password, vm.RememberMe,
                         lockoutOnFailure: false);
@@ -117,12 +121,28 @@ namespace WebApp.Controllers
             returnUrl ??= Url.Content("~/");
             if (ModelState.IsValid)
             {
+                var companies = (await _companyService.GetAllAsync());
+                var newCompany = new CompanyDto();
+                if (companies.All(x => x.Name != vm.Company))
+                {
+                    newCompany = new CompanyDto()
+                    {
+                        Id = Guid.NewGuid(),
+                        Name = vm.Company
+                    };
+                }
+
+                var company = companies.Any(x => x.Name == vm.Company)
+                    ? companies.FirstOrDefault(x => x.Name == vm.Company)
+                    : await _companyService.CreateAsync(newCompany);
+
                 var user = new User()
                 {
                     FirstName = vm.FirstName,
                     LastName = vm.LastName,
                     UserName = vm.Email,
-                    Email = vm.Email
+                    Email = vm.Email,
+                    CompanyId = company?.Id
                 };
                 var result = await _userManager.CreateAsync(user, vm.Password);
                 if (result.Succeeded)
@@ -201,12 +221,9 @@ namespace WebApp.Controllers
                 var user = await _userManager.FindByEmailAsync(vm.Email);
                 if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
                 {
-                    // Don't reveal that the user does not exist or is not confirmed
                     return Redirect(nameof(ForgotPasswordConfirmation));
                 }
 
-                // For more information on how to enable account confirmation and password reset please 
-                // visit https://go.microsoft.com/fwlink/?LinkID=532713
                 var code = await _userManager.GeneratePasswordResetTokenAsync(user);
                 var callbackUrl = Url.Action(
                     "ResetPassword",
@@ -259,7 +276,6 @@ namespace WebApp.Controllers
             var user = await _userManager.FindByEmailAsync(vm.Email);
             if (user == null)
             {
-                // Don't reveal that the user does not exist
                 return Redirect(nameof(ForgotPasswordConfirmation));
             }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using WebApp.Domain.Models;
 using WebApp.Models.Shared;
 
 namespace WebApp.Models
@@ -14,5 +15,13 @@ namespace WebApp.Models
         public string Email { get; set; }
 
         public string PhoneNumber { get; set; }
+
+        public Company Company { get; set; }
+        
+        public Guid? CompanyId { get; set; }
+
+        public Warehouse Warehouse { get; set; }
+        
+        public Guid? WarehouseId { get; set; }
     }
 }

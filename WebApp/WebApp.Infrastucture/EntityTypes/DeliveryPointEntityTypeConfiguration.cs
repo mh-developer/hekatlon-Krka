@@ -16,6 +16,8 @@ namespace WebApp.Infrastructure.EntityTypes
             builder.HasOne(o => o.Warehouse);
 
             builder.Property(o => o.Name).IsRequired();
+            builder.Property(o => o.Address);
+            builder.Property(o => o.PhoneNumber);
 
             builder.HasIndex(i => i.Name).HasFilter("[IsDeleted] = 0");
             builder.HasIndex(i => i.Id).IsUnique().HasFilter("[IsDeleted] = 0");

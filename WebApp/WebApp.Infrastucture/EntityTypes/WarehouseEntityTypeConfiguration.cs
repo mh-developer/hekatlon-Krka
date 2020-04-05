@@ -14,6 +14,8 @@ namespace WebApp.Infrastructure.EntityTypes
             builder.Property(o => o.Id).HasColumnName("WarehouseID");
 
             builder.Property(o => o.Name).IsRequired();
+            builder.Property(o => o.Address);
+            builder.Property(o => o.PhoneNumber);
             builder.Property(o => o.MinCode).IsRequired(false);
             builder.Property(o => o.MaxCode).IsRequired(false);
 

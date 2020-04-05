@@ -10,6 +10,8 @@ namespace WebApp.Models
 
         public DeliveryPoint DeliveryPoint { get; set; }
 
+        public Guid? DeliveryPointId { get; set; }
+
         public DeliveryStatus Status { get; set; }
 
         public DateTime? DispatchTime { get; set; }
@@ -20,6 +22,10 @@ namespace WebApp.Models
 
         public Company SourceCompany { get; set; }
 
+        public Guid? SourceCompanyId { get; set; }
+
         public Company DestinationCompany { get; set; }
+
+        public Guid? DestinationCompanyId { get; set; }
     }
 }

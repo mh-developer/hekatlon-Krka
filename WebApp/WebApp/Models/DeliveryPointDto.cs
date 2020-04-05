@@ -9,5 +9,11 @@ namespace WebApp.Models
         public string Name { get; set; }
 
         public Warehouse Warehouse { get; set; }
+
+        public Guid? WarehouseId { get; set; }
+
+        public string Address { get; set; }
+
+        public string PhoneNumber { get; set; }
     }
 }

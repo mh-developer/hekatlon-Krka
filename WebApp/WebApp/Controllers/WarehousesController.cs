@@ -1,28 +1,44 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using WebApp.Domain.Models;
-using WebApp.Infrastructure;
+using WebApp.Models;
+using WebApp.Services;
 
 namespace WebApp.Controllers
 {
     public class WarehousesController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ILogger<WarehousesController> _logger;
+        private readonly UserManager<User> _userManager;
+        private readonly IUserService _userService;
+        private readonly IWarehouseService _warehouseService;
+        private readonly IAuthenticationSchemeProvider _schemeProvider;
 
-        public WarehousesController(ApplicationDbContext context)
+        public WarehousesController(
+            ILogger<WarehousesController> logger,
+            IAuthenticationSchemeProvider schemeProvider,
+            UserManager<User> userManager,
+            IUserService userService,
+            IWarehouseService warehouseService)
         {
-            _context = context;
+            _logger = logger;
+            _userManager = userManager;
+            _userService = userService;
+            _warehouseService = warehouseService;
+            _schemeProvider = schemeProvider;
         }
 
         // GET: Warehouses
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Warehouses.ToListAsync());
+            return View(await _warehouseService.GetAllAsync());
         }
 
         // GET: Warehouses/Details/5
@@ -33,8 +49,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var warehouse = await _context.Warehouses
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var warehouse = await _warehouseService.GetAsync((Guid) id);
             if (warehouse == null)
             {
                 return NotFound();
@@ -54,15 +69,16 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("MinCode,MaxCode,Name,Id,IsDeleted,DeletionTime")] Warehouse warehouse)
+        public async Task<IActionResult> Create([Bind("MinCode,MaxCode,Name,Address,PhoneNumber")]
+            WarehouseDto warehouse)
         {
             if (ModelState.IsValid)
             {
                 warehouse.Id = Guid.NewGuid();
-                _context.Add(warehouse);
-                await _context.SaveChangesAsync();
+                await _warehouseService.CreateAsync(warehouse);
                 return RedirectToAction(nameof(Index));
             }
+
             return View(warehouse);
         }
 
@@ -74,11 +90,12 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var warehouse = await _context.Warehouses.FindAsync(id);
+            var warehouse = await _warehouseService.GetAsync((Guid) id);
             if (warehouse == null)
             {
                 return NotFound();
             }
+
             return View(warehouse);
         }
 
@@ -87,7 +104,8 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("MinCode,MaxCode,Name,Id,IsDeleted,DeletionTime")] Warehouse warehouse)
+        public async Task<IActionResult> Edit(Guid id, [Bind("MinCode,MaxCode,Name,Address,PhoneNumber,Id")]
+            WarehouseDto warehouse)
         {
             if (id != warehouse.Id)
             {
@@ -98,12 +116,11 @@ namespace WebApp.Controllers
             {
                 try
                 {
-                    _context.Update(warehouse);
-                    await _context.SaveChangesAsync();
+                    await _warehouseService.UpdateAsync(warehouse);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!WarehouseExists(warehouse.Id))
+                    if (!await WarehouseExists(warehouse.Id))
                     {
                         return NotFound();
                     }
@@ -112,8 +129,10 @@ namespace WebApp.Controllers
                         throw;
                     }
                 }
+
                 return RedirectToAction(nameof(Index));
             }
+
             return View(warehouse);
         }
 
@@ -125,8 +144,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var warehouse = await _context.Warehouses
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var warehouse = await _warehouseService.GetAsync((Guid) id);
             if (warehouse == null)
             {
                 return NotFound();
@@ -140,15 +158,14 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var warehouse = await _context.Warehouses.FindAsync(id);
-            _context.Warehouses.Remove(warehouse);
-            await _context.SaveChangesAsync();
+            await _warehouseService.RemoveAsync(id);
             return RedirectToAction(nameof(Index));
         }
 
-        private bool WarehouseExists(Guid id)
+        private async Task<bool> WarehouseExists(Guid id)
         {
-            return _context.Warehouses.Any(e => e.Id == id);
+            var warehouse = await _warehouseService.GetAllAsync();
+            return warehouse.Any(e => e.Id == id);
         }
     }
 }

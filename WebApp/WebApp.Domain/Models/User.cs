@@ -15,7 +15,11 @@ namespace WebApp.Domain.Models
         public virtual DateTime? DeletionTime { get; set; }
 
         public virtual Company Company { get; set; }
+        
+        public virtual Guid? CompanyId { get; set; }
 
         public virtual Warehouse Warehouse { get; set; }
+        
+        public virtual Guid? WarehouseId { get; set; }
     }
 }

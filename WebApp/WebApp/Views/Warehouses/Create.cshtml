@@ -1,73 +1,36 @@
-﻿@*@model WebApp.Domain.Models.Warehouse
+﻿@model WarehouseDto
 
 @{
-ViewData["Title"] = "Create";
+    ViewData["Title"] = "Dodaj";
 }
 
-<h1>Create</h1>
-
-<h4>Warehouse</h4>
-<hr />
-<div class="row">
-<div class="col-md-4">
-    <form asp-action="Create">
+<div class="login-form">
+    <form asp-action="Create" method="post">
+        <div class="avatar">
+            <i class="material-icons">home</i>
+        </div>
+        <h4 class="modal-title">Dodajanje skladišča</h4>
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="form-group">
-            <label asp-for="MinCode" class="control-label"></label>
-            <input asp-for="MinCode" class="form-control" />
-            <span asp-validation-for="MinCode" class="text-danger"></span>
-        </div>
-        <div class="form-group">
-            <label asp-for="MaxCode" class="control-label"></label>
-            <input asp-for="MaxCode" class="form-control" />
-            <span asp-validation-for="MaxCode" class="text-danger"></span>
-        </div>
-        <div class="form-group">
-            <label asp-for="Name" class="control-label"></label>
-            <input asp-for="Name" class="form-control" />
+            <input type="text" asp-for="Name" class="form-control" placeholder="Naziv" required="required">
             <span asp-validation-for="Name" class="text-danger"></span>
         </div>
-        <div class="form-group form-check">
-            <label class="form-check-label">
-                <input class="form-check-input" asp-for="IsDeleted" /> @Html.DisplayNameFor(model => model.IsDeleted)
-            </label>
+        <div class="form-group">
+            <input type="text" asp-for="Address" class="form-control" placeholder="Naslov" required="required">
+            <span asp-validation-for="Address" class="text-danger"></span>
         </div>
         <div class="form-group">
-            <label asp-for="DeletionTime" class="control-label"></label>
-            <input asp-for="DeletionTime" class="form-control" />
-            <span asp-validation-for="DeletionTime" class="text-danger"></span>
-        </div>
-        <div class="form-group">
-            <input type="submit" value="Create" class="btn btn-primary" />
-        </div>
-    </form>
-</div>
-</div>
-
-<div>
-<a asp-action="Index">Back to List</a>
-</div>
-
-@section Scripts {
-@{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}*@
-
-<div class="login-form">
-    <form action="/examples/actions/confirmation.php" method="post">
-        <div class="avatar"><i class="material-icons">home</i></div>
-        <h4 class="modal-title">Dodajanje skladišča</h4>
-        <div class="form-group">
-            <input type="text" class="form-control" placeholder="Šifra" required="required">
-        </div>
-        <div class="form-group">
-            <input type="text" class="form-control" placeholder="Naziv" required="required">
-        </div>
-        <div class="form-group">
-            <input type="text" class="form-control" placeholder="Naslov" required="required">
-        </div>
-        <div class="form-group">
-            <input type="text" class="form-control" placeholder="Tel. številka" required="required">
+            <input type="text" asp-for="PhoneNumber" class="form-control" placeholder="Tel. številka">
+            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
         </div>
         <input type="submit" class="btn btn-primary btn-block btn-lg" value="Dodaj">
     </form>
 </div>
+
+<div>
+    <a asp-action="Index">Nazaj na seznam skladišč</a>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

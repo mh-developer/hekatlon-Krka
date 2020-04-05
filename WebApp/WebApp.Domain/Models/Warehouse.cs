@@ -10,9 +10,13 @@ namespace WebApp.Domain.Models
         public virtual int? MaxCode { get; set; }
 
         public virtual Company Company { get; set; }
+        
+        public virtual Guid? CompanyId { get; set; }
 
         public virtual string Name { get; set; }
 
-        public virtual Event[] Events { get; set; }
+        public virtual string Address { get; set; }
+
+        public virtual string PhoneNumber { get; set; }
     }
 }
