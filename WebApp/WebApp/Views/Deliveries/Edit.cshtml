@@ -4,59 +4,39 @@
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
-
-<h4>Delivery</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
+    <div class="login-form">
         <form asp-action="Edit">
+            <div class="avatar"><i class="material-icons">local_shipping</i></div>
+            <h4 class="modal-title">Urejanje pošiljke</h4>
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
             <div class="form-group">
-                <label asp-for="Code" class="control-label"></label>
-                <input asp-for="Code" class="form-control" />
+                <input asp-for="Code" type="number" class="form-control" placeholder="Šifra" />
                 <span asp-validation-for="Code" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Status" class="control-label"></label>
-                <select asp-for="Status" class="form-control"></select>
+                <input asp-for="Status" type="text" class="form-control" placeholder="Status" />
                 <span asp-validation-for="Status" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="DispatchTime" class="control-label"></label>
-                <input asp-for="DispatchTime" class="form-control" />
+                <input asp-for="DispatchTime" type="datetime" class="form-control" placeholder="Čas odprave" />
                 <span asp-validation-for="DispatchTime" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="DeliveryTime" class="control-label"></label>
-                <input asp-for="DeliveryTime" class="form-control" />
+                <input asp-for="DeliveryTime" type="datetime" class="form-control" placeholder="Čas dostave" />
                 <span asp-validation-for="DeliveryTime" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="CreationTime" class="control-label"></label>
-                <input asp-for="CreationTime" class="form-control" />
+                <input asp-for="CreationTime" type="tel" class="form-control" placeholder="Čas zahtevka" />
                 <span asp-validation-for="CreationTime" class="text-danger"></span>
             </div>
             <input type="hidden" asp-for="Id" />
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="IsDeleted" /> @Html.DisplayNameFor(model => model.IsDeleted)
-                </label>
-            </div>
-            <div class="form-group">
-                <label asp-for="DeletionTime" class="control-label"></label>
-                <input asp-for="DeletionTime" class="form-control" />
-                <span asp-validation-for="DeletionTime" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
+            <input type="submit" class="btn btn-primary btn-block btn-lg" value="Shrani">
         </form>
     </div>
-</div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
+<div class="text-center">
+    <a asp-action="Index">Nazaj na seznam</a>
 </div>
 
 @section Scripts {
