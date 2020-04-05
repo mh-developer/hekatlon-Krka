@@ -5,12 +5,11 @@ namespace WebApp.Models.Account
     public class ResetPasswordModel
     {
         [Required(ErrorMessage = "E-mail je obvezen.")]
-        [EmailAddress(ErrorMessage = "Vnos, ni veljaven e-mail naslov.")]
+        [EmailAddress(ErrorMessage = "Vnesen ni veljaven e-mail naslov.")]
         public string Email { get; set; }
 
         [Required(ErrorMessage = "Geslo je obvezno.")]
-        [StringLength(100, ErrorMessage = "{0} mora biti vsaj {2}.",
-            MinimumLength = 6)]
+        [StringLength(100, ErrorMessage = "{0} mora biti vsaj {2}.", MinimumLength = 6)]
         [DataType(DataType.Password)]
         public string Password { get; set; }
 

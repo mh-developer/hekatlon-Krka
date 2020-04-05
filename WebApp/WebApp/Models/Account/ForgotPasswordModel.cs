@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace WebApp.Models.Account
 {
     public class ForgotPasswordModel
     {
-        [Required]
-        [EmailAddress]
+        [Required(ErrorMessage = "E-mail je obvezen.")]
+        [EmailAddress(ErrorMessage = "Vnesen ni veljaven e-mail naslov.")]
+        [Display(Name = "E-mail")]
         public string Email { get; set; }
     }
 }

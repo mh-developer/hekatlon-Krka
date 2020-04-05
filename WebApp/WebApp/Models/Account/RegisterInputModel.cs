@@ -4,25 +4,25 @@ namespace WebApp.Models.Account
 {
     public class RegisterInputModel
     {
-        [Required]
+        [Required(ErrorMessage = "Ime je obvezno.")]
         [Display(Name = "Ime")]
         public string FirstName { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Priimek je obvezno.")]
         [Display(Name = "Priimek")]
         public string LastName { get; set; }
-        
-        [Required]
-        [EmailAddress]
+
+        [Required(ErrorMessage = "E-mail je obvezen.")]
+        [EmailAddress(ErrorMessage = "Vnesen ni veljaven e-mail naslov.")]
         [Display(Name = "E-mail")]
         public string Email { get; set; }
 
-        [Required] 
+        [Required(ErrorMessage = "Podjetje je obvezno.")]
         [Display(Name = "Podjetje")]
         public string Company { get; set; }
 
-        [Required]
-        [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+        [Required(ErrorMessage = "Geslo je obvezno.")]
+        [StringLength(100, ErrorMessage = "{0} mora biti vsaj {2}.", MinimumLength = 6)]
         [DataType(DataType.Password)]
         [Display(Name = "Geslo")]
         public string Password { get; set; }
