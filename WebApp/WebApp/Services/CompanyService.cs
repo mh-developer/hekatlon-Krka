@@ -66,6 +66,22 @@ namespace WebApp.Services
             return _mapper.Map<Company, CompanyDto>(company);
         }
 
+        public async Task<CompanyDto> GetByNameAsync(string name)
+        {
+            if (string.IsNullOrEmpty(name))
+            {
+                throw new ArgumentException("name is invalid.", nameof(name));
+            }
+
+            var company = await _companyRepository.FilterAsync(x => x.Name.ToUpper().Equals(name.ToUpper()));
+            if (company.Count == 0)
+            {
+                throw new Exception($"Could not find user with name = '{name}'");
+            }
+
+            return _mapper.Map<Company, CompanyDto>(company[0]);
+        }
+
         public async Task RemoveAsync(Guid companyId)
         {
             if (companyId == default)

@@ -11,6 +11,8 @@ namespace WebApp.Services
 
         Task<CompanyDto> GetAsync(Guid companyId);
 
+        Task<CompanyDto> GetByNameAsync(string name);
+
         Task<CompanyDto> CreateAsync(CompanyDto companyDto);
 
         Task UpdateAsync(CompanyDto companyDto);

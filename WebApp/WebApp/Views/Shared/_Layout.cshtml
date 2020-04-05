@@ -21,67 +21,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@@fullcalendar/interaction@4.4.0/main.min.js"></script>
 
     <link rel="stylesheet" href="~/css/site.css" />
-    <script type="text/javascript">
-        $(document).ready(function () {
-            $('[data-toggle="tooltip"]').tooltip();
 
-            var calendarEl = document.getElementById('calendar');
-            let startTime = document.getElementById('startTime');
-            let endTime = document.getElementById('endTime');
-            let c = 0;
-
-            var calendar = new FullCalendar.Calendar(calendarEl, {
-                plugins: ['interaction', 'dayGrid', 'timeGrid'],
-                selectable: true,
-                droppable: true,
-                editable: true,
-                themeSystem: 'bootstrap',
-                defaultView: 'timeGridWeek',
-                header: {
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'timeGridWeek'
-                },
-                minTime: '06:00:00',
-                maxTime: '18:00:00',
-                slotDuration: '00:30:00',
-                nowIndicator: true,
-                theme: 'cosmo',
-                eventOverlap: false,
-                events: [
-                    {
-                        title: 'Dostava',
-                        start: '2020-04-05 12:00:00',
-                        end: '2020-04-05 12:30:00'
-                    }
-                ],
-                eventDrop: function (info) {
-                    startTime.innerHTML = info.event.start;
-                    endTime.innerHTML = info.event.end;
-                },
-                select: function (info) {
-                    if (c === 0) {
-                        alert('selected ' + info.startStr + ' to ' + info.endStr);
-                        this.addEvent(
-                            {
-                                title: 'Dostava',
-                                start: info.startStr,
-                                end: info.endStr,
-                                editable: true,
-                                eventOverlap: false,
-                                durationEditable: false
-                            }
-                        );
-                        this.selectable = false;
-                        startTime.innerHTML = info.startStr;
-                        endTime.innerHTML = info.endStr;
-                        c++;
-                    }
-                },
-            });
-            calendar.render();
-        });
-    </script>
     <style type="text/css">
         body {
             color: #999;
@@ -398,6 +338,18 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Deliveries" asp-action="Index">Deliveries</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Warehouses" asp-action="Index">Warehouses</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Warehouses" asp-action="Create">Warehouses Create</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Deliveries" asp-action="Create">Deliveries Create</a>
                         </li>
                     </ul>
                     <div class="d-flex justify-content-end my-2 my-lg-0">
