@@ -5,7 +5,6 @@ Kazalo vsebine
 - [Predpogoji](#predpogoji)
 - [Inštalacija in poganjanje](#inštalacija-in-poganjanje)
 - [Uporabljene tehnologije](#uporabljene-tehnologije)
-- [Uporabljene tehnologije](#uporabljene-tehnologije)
 - [Uporabljen pristop](#uporabljen-pristop)
 - [Struktura aplikacije](#struktura-aplikacije)
 
@@ -26,11 +25,11 @@ Ko imate pripravljena razvijalska okolja, zaženite sledeče ukaze:
     - Po potrebi izvedite `Restore NuGet Packages`
 
 2. Nastavite povezavo do podatkovne baze v Visual Studiu
-    - `WebApp -> appsettings.json -> "ConnectionStrings" -> "Default"`
+    - `WebApp -> appsettings.json -> "ConnectionStrings" -> "DefaultConnection"`
     
 3. Zaženite migracije podatkovne baze
     - `dotnet ef database update` -> če uporabljate .NET Core CLI
-    - `Update-Database` -> če uporabljate Packege Manager Console
+    - `Update-Database -Project WebApp.Infrastructure` -> če uporabljate Packege Manager Console
     
 4. Nato lahko zaženete aplikacijo
 
@@ -38,6 +37,7 @@ Ko imate pripravljena razvijalska okolja, zaženite sledeče ukaze:
 ## Uporabljene tehnologije
 
 - ASP.NET Core MVC 3.1
+- Za pošiljanje e-mailov SendGrid
 
 ## Uporabljen pristop
 
