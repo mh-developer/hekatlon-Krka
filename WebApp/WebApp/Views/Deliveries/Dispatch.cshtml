@@ -2,13 +2,13 @@
 @model WebApp.Models.Delivery.DeliveryViewModel
 
 
-<script type="text/javascript">
+    <script type="text/javascript">
     function convertDatetime(datetime) {
         var date = new Date(datetime);
         var day = date.getDate();       // yields date
         var month = date.getMonth() + 1;    // yields month (add one as '.getMonth()' is zero indexed)
         var year = date.getFullYear();  // yields year
-        var hour = date.getHours();     // yields hours 
+        var hour = date.getHours();     // yields hours
         var minute = date.getMinutes(); // yields minutes
         var second = date.getSeconds(); // yields seconds
 
@@ -19,8 +19,9 @@
 
     $(document).ready(function() {
         $('[data-toggle="tooltip"]').tooltip();
+        console.log();
 
-        var calendarEl = document.getElementById('calendar');
+        let calendarEl = document.getElementById('calendar');
         let startTime = document.getElementById('startTime');
         let endTime = document.getElementById('endTime');
         let c = 0;
@@ -44,7 +45,7 @@
                 nowIndicator: true,
                 theme: 'cosmo',
                 eventOverlap: false,
-                events: @{ @Html.Raw(JsonConvert.SerializeObject(Model.DeliveryEvents)) } ,
+                events: @{ @Html.Raw(JsonConvert.SerializeObject(Model.DeliveryEvents)) },
                 eventDrop: function(info) {
                     startTime.value = convertDatetime(info.event.start);
                     endTime.value = convertDatetime(info.event.end);
@@ -70,7 +71,7 @@
             });
         calendar.render();
     });
-</script>
+    </script>
 <div class="dispatch-form-width login-form">
     <form asp-action="Dispatch">
         <div class="avatar">

@@ -37,7 +37,7 @@
                          <td>@Html.DisplayFor(modelItem => item.Code)</td>
                          <td>@Html.DisplayFor(modelItem => item.DeliveryPoint.Warehouse.Name)</td>
                          <td>
-                             @Html.DisplayFor(modelItem => Model.DestinationCompanies.Name)
+                             @Html.DisplayFor(modelItem => item.DestinationCompany.Name)
                          </td>
                          <td>@Html.DisplayFor(modelItem => item.CreationTime)</td>
                          <td>
@@ -126,36 +126,34 @@
                          <td>@Html.DisplayFor(modelItem => item.CreationTime)</td>
                          <td>@Html.DisplayFor(modelItem => item.DeliveryTime)</td>
                          <td>@Html.DisplayFor(modelItem => item.DispatchTime)</td>
-                         <td>
-                             @{
-                                 switch (item.Status)
-                                 {
-                                     case DeliveryStatus.InProgress:
-                                         <text>
-                                             <td><span class="status text-warning">&bull;</span> Na poti</td>
-                                         </text>
-                                         break;
+                         @{
+                             switch (item.Status)
+                             {
+                                 case DeliveryStatus.InProgress:
+                                     <text>
+                                         <td><span class="status text-warning">&bull;</span> Na poti</td>
+                                     </text>
+                                     break;
 
-                                     case DeliveryStatus.Received:
-                                         <text>
-                                             <td><span class="status text-success">&bull;</span> Dostavljena</td>
-                                         </text>
-                                         break;
+                                 case DeliveryStatus.Received:
+                                     <text>
+                                         <td><span class="status text-success">&bull;</span> Dostavljena</td>
+                                     </text>
+                                     break;
 
-                                     case DeliveryStatus.Rejected:
-                                         <text>
-                                             <td><span class="status text-danger">&bull;</span> Suspendirana</td>
-                                         </text>
-                                         break;
+                                 case DeliveryStatus.Rejected:
+                                     <text>
+                                         <td><span class="status text-danger">&bull;</span> Suspendirana</td>
+                                     </text>
+                                     break;
 
-                                     default:
-                                         <text>
-                                             <td><span class="status text-warning">&bull;</span> Na poti</td>
-                                         </text>
-                                         break;
-                                 }
+                                 default:
+                                     <text>
+                                         <td><span class="status text-warning">&bull;</span> Na poti</td>
+                                     </text>
+                                     break;
                              }
-                         </td>
+                         }
                          <td>
                              <a asp-action="Edit" asp-route-id="@item.Id" class="settings" title="Uredi" data-toggle="tooltip">
                                  <i class="material-icons">&#xE8B8;</i>

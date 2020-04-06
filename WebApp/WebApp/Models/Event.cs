@@ -4,10 +4,10 @@ namespace WebApp.Models
 {
     public class Event
     {
-        public virtual string Title { get; set; }
+        public virtual string title { get; set; }
 
-        public virtual DateTime? Start { get; set; }
+        public virtual DateTime? start { get; set; }
 
-        public virtual DateTime? End { get; set; }
+        public virtual DateTime? end { get; set; }
     }
 }

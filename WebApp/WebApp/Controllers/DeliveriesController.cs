@@ -105,7 +105,7 @@ namespace WebApp.Controllers
                     var newDelivery = new DeliveryDto()
                     {
                         Id = Guid.NewGuid(),
-                        CreationTime = DateTime.UtcNow,
+                        CreationTime = DateTime.Now,
                         DestinationCompanyId = user.CompanyId,
                         SourceCompanyId = sourceCompany.Id,
                         Code = delivery.Code,
@@ -188,7 +188,7 @@ namespace WebApp.Controllers
             {
                 return NotFound();
             }
-            
+
             var delivery = await _deliveryService.GetAsync((Guid) id);
             var user = await _userManager.GetUserAsync(HttpContext.User);
             var company = await _companyService.GetAsync((Guid) user.CompanyId);
@@ -196,25 +196,31 @@ namespace WebApp.Controllers
             try
             {
                 var warehouse = (await _warehouseService.GetAllAsync()).Where(x =>
-                    x.CompanyId == company.Id && x.MaxCode >= delivery.Code && x.MinCode <= delivery.Code).FirstOrDefault();
+                        x.CompanyId == company.Id && x.MaxCode >= delivery.Code && x.MinCode <= delivery.Code)
+                    .FirstOrDefault();
 
-                var deliveryPoints = (await _deliveryPointService.GetAllAsync()).Where(x => x.WarehouseId == warehouse.Id)
+                var deliveryPoints = (await _deliveryPointService.GetAllAsync())
+                    .Where(x => x.WarehouseId == warehouse.Id)
                     .ToList();
 
                 var deliveryEvents = new List<Event>();
 
                 deliveryPoints.ForEach((x) =>
                 {
-                    var deliveries = _deliveryService.GetAllAsync().GetAwaiter().GetResult().Where(o => o.DeliveryPointId == x.Id).ToList();
+                    var deliveries = _deliveryService.GetAllAsync().GetAwaiter().GetResult()
+                        .Where(o => o.DeliveryPointId == x.Id).ToList();
 
                     deliveries.ForEach(d =>
                     {
-                        deliveryEvents.Add(new Event()
+                        if (d.DispatchTime != null && d.DeliveryTime != null)
                         {
-                            Title = "Dostava",
-                            Start = d.DispatchTime,
-                            End = d.DeliveryTime
-                        });
+                            deliveryEvents.Add(new Event()
+                            {
+                                title = "Dostava",
+                                start = d.DispatchTime,
+                                end = d.DeliveryTime
+                            });
+                        }
                     });
                 });
 
@@ -227,17 +233,18 @@ namespace WebApp.Controllers
                     DeliveryEvents = deliveryEvents
                 };
 
-            if (vm == null)
-            {
-                return NotFound();
-            }
+                if (vm == null)
+                {
+                    return NotFound();
+                }
 
-            return View(vm);
+                return View(vm);
             }
             catch (Exception e)
             {
-                ModelState.AddModelError(string.Empty, "Prosimo vnesite skladišča (tudi min in max vrednost posebej) in dostavne točke, ter nato poskusite ponovno.");
-                
+                ModelState.AddModelError(string.Empty,
+                    "Prosimo vnesite skladišča (tudi min in max vrednost posebej) in dostavne točke, ter nato poskusite ponovno.");
+
                 return View(new DeliveryViewModel()
                 {
                     Id = delivery.Id,
@@ -334,7 +341,7 @@ namespace WebApp.Controllers
             var delivery = await _deliveryService.GetAsync((Guid) id);
 
             await _deliveryService.RemoveAsync(delivery.Id);
-            
+
             return RedirectToAction(nameof(Index));
         }
 
