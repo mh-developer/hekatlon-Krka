@@ -2,7 +2,9 @@
 
 <div class="login-form">
     <form asp-action="Create">
-        <div class="avatar"><i class="material-icons">mail</i></div>
+        <div class="avatar">
+            <i class="material-icons">mail</i>
+        </div>
         <h4 class="modal-title">Nov zahtevek za pošiljko</h4>
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
@@ -11,7 +13,7 @@
             <span asp-validation-for="Code" class="text-danger"></span>
         </div>
         <div class="form-group">
-            <input asp-for="SourceCompany.Name" type="text" class="form-control" placeholder="Podjetje, ki dostavlja" required="required">
+            <select asp-for="SourceCompanyId" class="form-control" asp-items="ViewBag.Companies" placeholder="Podjetje, ki dostavlja" required="required"></select>
             <span asp-validation-for="SourceCompany.Name" class="text-danger"></span>
         </div>
         <input type="submit" class="btn btn-primary btn-block btn-lg" value="Oddaja zahtevka">

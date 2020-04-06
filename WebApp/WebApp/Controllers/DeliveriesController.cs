@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using WebApp.Domain.Models;
 using WebApp.Models;
 using WebApp.Models.Delivery;
@@ -82,8 +83,9 @@ namespace WebApp.Controllers
         }
 
         // GET: Deliveries/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            ViewData["Companies"] = new SelectList(await _companyService.GetAllAsync(), "Id", "Name");
             return View();
         }
 
@@ -100,28 +102,43 @@ namespace WebApp.Controllers
                 {
                     var user = await _userManager.GetUserAsync(HttpContext.User);
 
-                    var sourceCompany = await _companyService.GetByNameAsync(delivery.SourceCompany.Name);
+                    var warehouse = (await _warehouseService.GetAllAsync())
+                        .Any(x =>
+                            x.CompanyId == delivery?.SourceCompanyId && x.MaxCode >= delivery?.Code &&
+                            x.MinCode <= delivery.Code);
 
-                    var newDelivery = new DeliveryDto()
+                    if (warehouse)
                     {
-                        Id = Guid.NewGuid(),
-                        CreationTime = DateTime.Now,
-                        DestinationCompanyId = user.CompanyId,
-                        SourceCompanyId = sourceCompany.Id,
-                        Code = delivery.Code,
-                        Status = DeliveryStatus.None
-                    };
+                        var newDelivery = new DeliveryDto()
+                        {
+                            Id = Guid.NewGuid(),
+                            CreationTime = DateTime.Now,
+                            DestinationCompanyId = user.CompanyId,
+                            SourceCompanyId = delivery.SourceCompanyId,
+                            Code = delivery.Code,
+                            Status = DeliveryStatus.None
+                        };
 
-                    await _deliveryService.CreateAsync(newDelivery);
-                    return RedirectToAction(nameof(Index));
+                        await _deliveryService.CreateAsync(newDelivery);
+                        return RedirectToAction(nameof(Index));
+                    }
+                    else
+                    {
+                        ViewData["Companies"] = new SelectList(await _companyService.GetAllAsync(), "Id", "Name");
+                        ModelState.AddModelError(string.Empty,
+                            $"Nobeno skladišče, tega podjetja, ne sprejema distavne šifre {delivery.Code}");
+                        return View(delivery);
+                    }
                 }
                 catch (Exception e)
                 {
+                    ViewData["Companies"] = new SelectList(await _companyService.GetAllAsync(), "Id", "Name");
                     ModelState.AddModelError(string.Empty, "Podjetje s takšnim imenom ne obstaja. Navedite točno ime.");
                     return View(delivery);
                 }
             }
 
+            ViewData["Companies"] = new SelectList(await _companyService.GetAllAsync(), "Id", "Name");
             return View(delivery);
         }
 
@@ -147,9 +164,7 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id,
-            [Bind("Code,Status,DispatchTime,DeliveryTime,Id")]
-            DeliveryDto delivery)
+        public async Task<IActionResult> Edit(Guid id, DeliveryDto delivery)
         {
             if (id != delivery.Id)
             {
@@ -160,7 +175,13 @@ namespace WebApp.Controllers
             {
                 try
                 {
-                    await _deliveryService.UpdateAsync(delivery);
+                    var updateDelivery = await _deliveryService.GetAsync(id);
+
+                    updateDelivery.DeliveryTime = delivery.DeliveryTime;
+                    updateDelivery.DispatchTime = delivery.DispatchTime;
+                    updateDelivery.DeliveryPointId = delivery.DeliveryPointId;
+
+                    await _deliveryService.UpdateAsync(updateDelivery);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -190,17 +211,16 @@ namespace WebApp.Controllers
             }
 
             var delivery = await _deliveryService.GetAsync((Guid) id);
-            var user = await _userManager.GetUserAsync(HttpContext.User);
-            var company = await _companyService.GetAsync((Guid) user.CompanyId);
+            var company = await _companyService.GetAsync((Guid) delivery?.DestinationCompanyId);
 
             try
             {
-                var warehouse = (await _warehouseService.GetAllAsync()).Where(x =>
-                        x.CompanyId == company.Id && x.MaxCode >= delivery.Code && x.MinCode <= delivery.Code)
-                    .FirstOrDefault();
+                var warehouse = (await _warehouseService.GetAllAsync())
+                    .FirstOrDefault(x =>
+                        x.CompanyId == company.Id && x.MaxCode >= delivery.Code && x.MinCode <= delivery.Code);
 
                 var deliveryPoints = (await _deliveryPointService.GetAllAsync())
-                    .Where(x => x.WarehouseId == warehouse.Id)
+                    .Where(x => x.WarehouseId == warehouse?.Id)
                     .ToList();
 
                 var deliveryEvents = new List<Event>();
@@ -232,11 +252,6 @@ namespace WebApp.Controllers
                     DeliveryPoints = deliveryPoints,
                     DeliveryEvents = deliveryEvents
                 };
-
-                if (vm == null)
-                {
-                    return NotFound();
-                }
 
                 return View(vm);
             }

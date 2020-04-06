@@ -4,50 +4,6 @@
     ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
-
-<h4>DeliveryPoint</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="WarehouseId" class="control-label"></label>
-                <select asp-for="WarehouseId" class="form-control" asp-items="ViewBag.WarehouseId"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="Address" class="control-label"></label>
-                <input asp-for="Address" class="form-control" />
-                <span asp-validation-for="Address" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="PhoneNumber" class="control-label"></label>
-                <input asp-for="PhoneNumber" class="form-control" />
-                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="IsDeleted" /> @Html.DisplayNameFor(model => model.IsDeleted)
-                </label>
-            </div>
-            <div class="form-group">
-                <label asp-for="DeletionTime" class="control-label"></label>
-                <input asp-for="DeletionTime" class="form-control" />
-                <span asp-validation-for="DeletionTime" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
-</div>
-
 <div class="login-form">
     <form asp-action="Create" method="post">
         <div class="avatar">
@@ -60,8 +16,15 @@
             <span asp-validation-for="Name" class="text-danger"></span>
         </div>
         <div class="form-group">
-            <input type="text" asp-for="Warehouse" class="form-control" placeholder="Naslov" required="required">
-            <span asp-validation-for="Warehouse" class="text-danger"></span>
+            <select asp-for="WarehouseId" class="form-control" asp-items="ViewBag.WarehouseId"></select>
+        </div>
+        <div class="form-group">
+            <input type="text" asp-for="Address" class="form-control" placeholder="Naslov" required="required">
+            <span asp-validation-for="Address" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <input asp-for="PhoneNumber" class="form-control" placeholder="Tel. številka" />
+            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
         </div>
         <input type="submit" class="btn btn-primary btn-block btn-lg" value="Dodaj">
     </form>
