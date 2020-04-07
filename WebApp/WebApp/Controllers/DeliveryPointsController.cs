@@ -1,15 +1,16 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Logging;
 using WebApp.Domain.Models;
 using WebApp.Infrastructure;
+using WebApp.Models;
 using WebApp.Services;
 
 namespace WebApp.Controllers
@@ -49,8 +50,7 @@ namespace WebApp.Controllers
         // GET: DeliveryPoints
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.DeliveryPoints.Include(d => d.Warehouse);
-            return View(await applicationDbContext.ToListAsync());
+            return View(await _deliveryPointService.GetAllAsync());
         }
 
         // GET: DeliveryPoints/Details/5
@@ -61,9 +61,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var deliveryPoint = await _context.DeliveryPoints
-                .Include(d => d.Warehouse)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var deliveryPoint = await _deliveryPointService.GetAsync((Guid) id);
             if (deliveryPoint == null)
             {
                 return NotFound();
@@ -84,15 +82,16 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,WarehouseId,Address,PhoneNumber,Id,IsDeleted,DeletionTime")] DeliveryPoint deliveryPoint)
+        public async Task<IActionResult> Create([Bind("Name,WarehouseId,Address,PhoneNumber,Id")]
+            DeliveryPointDto deliveryPoint)
         {
             if (ModelState.IsValid)
             {
                 deliveryPoint.Id = Guid.NewGuid();
-                _context.Add(deliveryPoint);
-                await _context.SaveChangesAsync();
+                await _deliveryPointService.CreateAsync(deliveryPoint);
                 return RedirectToAction(nameof(Index));
             }
+
             ViewData["WarehouseId"] = new SelectList(_context.Warehouses, "Id", "Name", deliveryPoint.WarehouseId);
             return View(deliveryPoint);
         }
@@ -105,12 +104,14 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var deliveryPoint = await _context.DeliveryPoints.FindAsync(id);
+            var deliveryPoint = await _deliveryPointService.GetAsync((Guid) id);
             if (deliveryPoint == null)
             {
                 return NotFound();
             }
-            ViewData["WarehouseId"] = new SelectList(_context.Warehouses, "Id", "Name", deliveryPoint.WarehouseId);
+
+            ViewData["WarehouseId"] = new SelectList(await _warehouseService.GetAllAsync(), "Id", "Name",
+                deliveryPoint.WarehouseId);
             return View(deliveryPoint);
         }
 
@@ -119,7 +120,8 @@ namespace WebApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Name,WarehouseId,Address,PhoneNumber,Id,IsDeleted,DeletionTime")] DeliveryPoint deliveryPoint)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Name,WarehouseId,Address,PhoneNumber,Id")]
+            DeliveryPointDto deliveryPoint)
         {
             if (id != deliveryPoint.Id)
             {
@@ -130,12 +132,11 @@ namespace WebApp.Controllers
             {
                 try
                 {
-                    _context.Update(deliveryPoint);
-                    await _context.SaveChangesAsync();
+                    await _deliveryPointService.UpdateAsync(deliveryPoint);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!DeliveryPointExists(deliveryPoint.Id))
+                    if (!await DeliveryPointExists(deliveryPoint.Id))
                     {
                         return NotFound();
                     }
@@ -144,9 +145,12 @@ namespace WebApp.Controllers
                         throw;
                     }
                 }
+
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["WarehouseId"] = new SelectList(_context.Warehouses, "Id", "Name", deliveryPoint.WarehouseId);
+
+            ViewData["WarehouseId"] = new SelectList(await _warehouseService.GetAllAsync(), "Id", "Name",
+                deliveryPoint.WarehouseId);
             return View(deliveryPoint);
         }
 
@@ -158,9 +162,9 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var deliveryPoint = await _deliveryPointService.GetAsync((Guid)id);
+            var deliveryPoint = await _deliveryPointService.GetAsync((Guid) id);
             await _deliveryPointService.RemoveAsync(deliveryPoint.Id);
-            
+
             return RedirectToAction(nameof(Index));
         }
 
@@ -173,9 +177,9 @@ namespace WebApp.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool DeliveryPointExists(Guid id)
+        private async Task<bool> DeliveryPointExists(Guid id)
         {
-            return _context.DeliveryPoints.Any(e => e.Id == id);
+            return (await _deliveryPointService.GetAllAsync()).Any(e => e.Id == id);
         }
     }
 }
